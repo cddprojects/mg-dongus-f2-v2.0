@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USStockEdge — Free 5-Minute Pre-Market Briefing</title>
+  <meta name="description" content="Free educational US pre-market briefing before 9 AM ET. AI-screened context, sector notes, and stocks worth researching — delivered to WhatsApp. Not financial advice." />
+  <meta name="robots" content="index, follow" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #14181d;
+      --ink-2: #22282f;
+      --slate: #3a4450;
+      --mist: #e7eef5;
+      --fog: #f4f7fa;
+      --paper: #fcfdfe;
+      --line: #d2dbe5;
+      --sky: #1f6f8b;
+      --sky-deep: #15566c;
+      --dawn: #e8a23a;
+      --muted: #5d6a76;
+      --ok: #0f766e;
+      --err: #b91c1c;
+      --wa: #128C7E;
+      --font-display: "Newsreader", Georgia, serif;
+      --font-body: "Manrope", "Segoe UI", sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--fog);
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+    ul { list-style: none; }
+
+    /* ── Hero ───────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: clamp(360px, 52vh, 520px);
+      display: flex;
+      flex-direction: column;
+      color: var(--paper);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      overflow: hidden;
+    }
+
+    .hero-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 35%;
+      transform: scale(1.04);
+      animation: heroShift 22s ease-in-out infinite alternate;
+      filter: saturate(0.92) contrast(1.05);
+    }
+
+    .hero-veil {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        linear-gradient(180deg, rgba(10, 14, 18, 0.55) 0%, rgba(10, 14, 18, 0.48) 45%, rgba(10, 14, 18, 0.62) 100%),
+        radial-gradient(ellipse 70% 60% at 50% 45%, rgba(10, 14, 18, 0.2), rgba(10, 14, 18, 0.7) 100%);
+    }
+
+    .hero-glow {
+      position: absolute;
+      inset: auto auto -10% -10%;
+      width: 55%;
+      height: 55%;
+      z-index: -1;
+      background: radial-gradient(circle, rgba(31, 111, 139, 0.28), transparent 68%);
+      pointer-events: none;
+      animation: glowPulse 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes heroShift {
+      from { transform: scale(1.04) translate3d(0, 0, 0); }
+      to { transform: scale(1.1) translate3d(-1.5%, 1%, 0); }
+    }
+
+    @keyframes glowPulse {
+      from { opacity: 0.55; }
+      to { opacity: 1; }
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.15rem clamp(1.25rem, 4vw, 3rem);
+      z-index: 2;
+    }
+
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem 1.15rem;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .nav-links a {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: rgba(252, 253, 254, 0.82);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: #fff; }
+
+    .nav-cta {
+      padding: 0.55rem 0.9rem;
+      border-radius: 7px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.22);
+    }
+
+    .hero-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 1.25rem clamp(1.25rem, 4vw, 3rem) 3.5rem;
+      max-width: 720px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .brand {
+      font-family: var(--font-display);
+      font-size: clamp(2.6rem, 6.5vw, 4.4rem);
+      font-weight: 600;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+      opacity: 0;
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
+    }
+
+    .brand-rule {
+      width: 0;
+      height: 3px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(90deg, var(--dawn), var(--sky));
+      animation: draw 1s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
+    }
+
+    @keyframes draw { to { width: min(140px, 36%); } }
+
+    .headline {
+      font-family: var(--font-display);
+      font-size: clamp(1.35rem, 2.8vw, 1.9rem);
+      font-weight: 500;
+      line-height: 1.25;
+      max-width: 22ch;
+      margin: 0 auto 0.7rem;
+      opacity: 0;
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.22s forwards;
+    }
+
+    .subhead {
+      font-size: 0.98rem;
+      color: rgba(244, 247, 250, 0.82);
+      max-width: 42ch;
+      margin: 0 auto 1.25rem;
+      opacity: 0;
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.36s forwards;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1rem;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.95rem 1.35rem;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--sky) 0%, var(--sky-deep) 100%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.98rem;
+      box-shadow: 0 10px 28px rgba(21, 86, 108, 0.35);
+      transition: transform 0.15s ease, filter 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: rgba(252, 253, 254, 0.85);
+      border-bottom: 1px solid rgba(252, 253, 254, 0.35);
+      padding-bottom: 2px;
+    }
+    .btn-ghost:hover { color: #fff; border-color: rgba(255,255,255,0.7); }
+
+    .hero-note {
+      margin: 0.95rem auto 0;
+      font-size: 0.78rem;
+      color: rgba(244, 247, 250, 0.5);
+      max-width: 46ch;
+      opacity: 0;
+      animation: rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.62s forwards;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+
+    /* ── Live market tape + snapshot ────────────────────────── */
+    .ticker-wrap {
+      background: #0b1015;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      overflow: hidden;
+    }
+    .ticker-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.45rem clamp(1.25rem, 4vw, 3rem) 0.25rem;
+    }
+    .ticker-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 750;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #4ade80;
+      animation: liveblink 2s infinite;
+    }
+    .live-dot.closed { background: var(--dawn); animation: none; }
+    @keyframes liveblink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+    .ticker-last-update { font-size: 0.72rem; color: rgba(255,255,255,0.35); }
+    .ticker-scroll { overflow: hidden; padding: 0.85rem 0 1rem; }
+    .ticker-track {
+      display: flex;
+      width: max-content;
+      animation: tickerMove 38s linear infinite;
+      white-space: nowrap;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0 1.6rem;
+      font-size: 0.92rem;
+      font-weight: 750;
+      color: rgba(255,255,255,0.9);
+      border-right: 1px solid rgba(255,255,255,0.08);
+    }
+    .ticker-item .t-price { color: rgba(255,255,255,0.45); font-weight: 500; font-size: 0.85rem; }
+    .ticker-item .up { color: #4ade80; }
+    .ticker-item .down { color: #f87171; }
+    @keyframes tickerMove {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .market {
+      background:
+        radial-gradient(ellipse 50% 40% at 100% 0%, rgba(31,111,139,0.08), transparent 55%),
+        var(--paper);
+      padding-top: clamp(2.8rem, 5vw, 4rem);
+    }
+
+    .market-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .market-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #0f766e;
+      background: rgba(15, 118, 110, 0.1);
+      border: 1px solid rgba(15, 118, 110, 0.22);
+      padding: 0.35rem 0.7rem;
+      border-radius: 999px;
+    }
+    .live-pill.closed {
+      color: #a16207;
+      background: rgba(232, 162, 58, 0.12);
+      border-color: rgba(232, 162, 58, 0.3);
+    }
+    .live-pill .live-dot { width: 6px; height: 6px; }
+    .refresh-note { font-size: 0.8rem; color: var(--muted); }
+
+    .stocks-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.65rem;
+    }
+
+    .stock-tile {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.75rem 0.7rem 0.65rem;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .stock-tile:hover {
+      border-color: rgba(31, 111, 139, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(20,24,29,0.06);
+    }
+    .stock-tile.up-tile { border-color: rgba(74, 222, 128, 0.35); }
+    .stock-tile.down-tile { border-color: rgba(248, 113, 113, 0.3); }
+    .stock-tile.selected {
+      border-color: rgba(31, 111, 139, 0.65);
+      box-shadow: 0 0 0 3px rgba(31, 111, 139, 0.12);
+    }
+    .st-sym { font-size: 0.78rem; font-weight: 800; color: var(--ink); margin-bottom: 0.2rem; }
+    .st-price { font-size: 0.9rem; font-weight: 700; color: var(--ink-2); margin-bottom: 0.15rem; }
+    .st-chg { font-size: 0.78rem; font-weight: 750; }
+    .st-chg.up { color: #15803d; }
+    .st-chg.down { color: #b91c1c; }
+    .loading-tile .st-price, .loading-tile .st-chg { color: #b7c2cc; }
+
+    .detail-panel {
+      margin-top: 1rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      padding: 1rem 1.1rem;
+    }
+    .dp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.85rem;
+    }
+    .dp-sym { font-weight: 800; font-size: 1.1rem; margin-right: 0.55rem; }
+    .dp-price { font-weight: 700; margin-right: 0.45rem; }
+    .dp-chg.up { color: #15803d; font-weight: 750; }
+    .dp-chg.down { color: #b91c1c; font-weight: 750; }
+    .dp-close {
+      border: 1px solid var(--line);
+      background: var(--fog);
+      border-radius: 6px;
+      width: 32px; height: 32px;
+      cursor: pointer;
+      color: var(--slate);
+    }
+    .dp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem 1rem;
+    }
+    .dp-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.86rem;
+      border-bottom: 1px solid var(--mist);
+      padding-bottom: 0.35rem;
+    }
+    .dp-row span { color: var(--muted); }
+    .dp-row strong { color: var(--ink); font-weight: 750; }
+    .market-note {
+      margin-top: 0.85rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .movers-table-wrap {
+      margin-top: 2rem;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .stocks-tabs {
+      display: flex;
+      background: var(--mist);
+      border-bottom: 1px solid var(--line);
+    }
+    .stab {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 0.85rem 0.75rem;
+      font-weight: 750;
+      font-size: 0.88rem;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .stab.active {
+      color: var(--sky-deep);
+      background: #fff;
+      border-bottom-color: var(--sky);
+    }
+    .stocks-table-scroll { overflow-x: auto; }
+    .stocks-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 560px;
+    }
+    .stocks-table th {
+      text-align: left;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.75rem 0.9rem;
+      border-bottom: 1px solid var(--line);
+      background: var(--fog);
+    }
+    .stocks-table td {
+      padding: 0.75rem 0.9rem;
+      font-size: 0.92rem;
+      border-bottom: 1px solid var(--mist);
+      cursor: pointer;
+    }
+    .stocks-table tr:hover td { background: rgba(31, 111, 139, 0.04); }
+    .td-sym { font-weight: 800; }
+    .td-name { color: var(--muted); }
+    .td-up { color: #15803d; font-weight: 750; }
+    .td-down { color: #b91c1c; font-weight: 750; }
+
+    /* ── Shared section chrome ──────────────────────────────── */
+    section { padding: clamp(3.4rem, 7vw, 5.5rem) clamp(1.25rem, 4vw, 3rem); }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .wrap-wide { max-width: 1080px; margin: 0 auto; }
+
+    .kicker {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--sky);
+      margin-bottom: 0.65rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.85rem, 4vw, 2.65rem);
+      font-weight: 600;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      color: var(--ink);
+    }
+
+    .section-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 56ch;
+      margin-bottom: 2rem;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .reveal.in-view { opacity: 1; transform: none; }
+
+    /* Problem */
+    .problem {
+      background:
+        radial-gradient(ellipse 60% 50% at 0% 0%, rgba(31, 111, 139, 0.08), transparent 55%),
+        var(--paper);
+    }
+
+    .problem-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem 2.4rem;
+    }
+
+    .problem-item h3 {
+      font-size: 1.05rem;
+      font-weight: 750;
+      margin-bottom: 0.35rem;
+    }
+
+    .problem-item p { font-size: 0.98rem; color: var(--muted); }
+
+    /* Method pillars */
+    .method {
+      background: linear-gradient(165deg, #152028 0%, #1a3340 48%, #14181d 100%);
+      color: var(--paper);
+    }
+    .method .kicker { color: #8ec8db; }
+    .method .section-title { color: #fff; }
+    .method .section-sub { color: rgba(244, 247, 250, 0.72); }
+
+    .pillars { display: grid; gap: 0; }
+
+    .pillar {
+      display: grid;
+      grid-template-columns: 7rem 1fr;
+      gap: 1.25rem;
+      padding: 1.45rem 0;
+      border-top: 1px solid rgba(255,255,255,0.12);
+    }
+    .pillar:last-child { border-bottom: 1px solid rgba(255,255,255,0.12); }
+
+    .pillar-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dawn);
+      padding-top: 0.35rem;
+    }
+
+    .pillar h3 {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 600;
+      margin-bottom: 0.45rem;
+    }
+
+    .pillar p { color: rgba(244, 247, 250, 0.72); font-size: 0.98rem; margin-bottom: 0.7rem; }
+
+    .pillar-list {
+      display: grid;
+      gap: 0.35rem;
+      color: rgba(244, 247, 250, 0.85);
+      font-size: 0.92rem;
+    }
+
+    .pillar-list li {
+      padding-left: 1rem;
+      position: relative;
+    }
+    .pillar-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--sky);
+    }
+
+    /* Receive */
+    .receive { background: var(--mist); }
+
+    .receive-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .receive-item {
+      padding: 1.35rem 1.25rem 1.35rem 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .receive-item:nth-child(odd) { padding-right: 1.75rem; }
+    .receive-item:nth-child(even) { padding-left: 1.75rem; border-left: 1px solid var(--line); }
+
+    .receive-item h3 {
+      font-size: 1.05rem;
+      font-weight: 750;
+      margin-bottom: 0.4rem;
+    }
+
+    .receive-item p { font-size: 0.96rem; color: var(--muted); }
+
+    /* Delivery / WA mock */
+    .delivery { background: var(--paper); }
+
+    .delivery-layout {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: clamp(1.5rem, 4vw, 3rem);
+      align-items: start;
+    }
+
+    .check-list { display: grid; gap: 0.85rem; margin-bottom: 1.5rem; }
+
+    .check-list li {
+      display: grid;
+      grid-template-columns: 1.35rem 1fr;
+      gap: 0.7rem;
+      font-size: 0.98rem;
+      color: var(--slate);
+    }
+
+    .check-list svg {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      color: var(--sky);
+    }
+
+    .wa-phone {
+      background: #111b21;
+      border-radius: 18px;
+      padding: 1.15rem 1.1rem 1.25rem;
+      color: #e9edef;
+      box-shadow: 0 22px 50px rgba(20, 24, 29, 0.22);
+      max-width: 360px;
+      margin-left: auto;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .wa-phone.in-view { opacity: 1; transform: none; }
+
+    .wa-top {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 1rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .wa-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--wa);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 0.8rem;
+      color: #fff;
+    }
+
+    .wa-top strong { display: block; font-size: 0.95rem; }
+    .wa-top span { font-size: 0.72rem; color: rgba(233,237,239,0.55); }
+
+    .wa-bubble {
+      background: #005c4b;
+      border-radius: 10px 10px 4px 10px;
+      padding: 0.85rem 0.95rem;
+      font-size: 0.86rem;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .wa-bubble .gold { color: #f2c14e; font-weight: 700; }
+    .wa-time {
+      margin-top: 0.55rem;
+      font-size: 0.68rem;
+      color: rgba(233,237,239,0.4);
+      text-align: right;
+    }
+
+    /* How */
+    .how { background: var(--fog); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.25rem;
+      counter-reset: step;
+    }
+
+    .step {
+      border-top: 2px solid var(--sky);
+      padding-top: 1rem;
+    }
+
+    .step .n {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      color: var(--sky);
+      line-height: 1;
+      margin-bottom: 0.55rem;
+    }
+
+    .step h3 {
+      font-size: 1.05rem;
+      font-weight: 750;
+      margin-bottom: 0.4rem;
+    }
+
+    .step p { font-size: 0.93rem; color: var(--muted); }
+
+    /* Markets */
+    .markets { background: var(--paper); }
+
+    .market-rows { display: grid; gap: 0; }
+
+    .market-row {
+      display: grid;
+      grid-template-columns: 8rem 1fr;
+      gap: 1rem;
+      padding: 1.15rem 0;
+      border-top: 1px solid var(--line);
+      align-items: start;
+    }
+    .market-row:last-child { border-bottom: 1px solid var(--line); }
+
+    .market-row strong {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+
+    .market-row p { font-size: 0.95rem; color: var(--muted); margin-bottom: 0.45rem; }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tags span {
+      font-size: 0.75rem;
+      font-weight: 650;
+      color: var(--sky-deep);
+      background: rgba(31, 111, 139, 0.1);
+      padding: 0.28rem 0.55rem;
+      border-radius: 999px;
+    }
+
+    /* Audience */
+    .audience {
+      background: linear-gradient(160deg, #1a2430 0%, #243846 100%);
+      color: var(--paper);
+    }
+    .audience .kicker { color: #8ec8db; }
+    .audience .section-title { color: #fff; }
+    .audience .section-sub { color: rgba(244, 247, 250, 0.72); }
+
+    .audience-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem 2rem;
+    }
+
+    .audience-item h3 {
+      font-size: 1.05rem;
+      font-weight: 750;
+      margin-bottom: 0.35rem;
+    }
+
+    .audience-item p { font-size: 0.95rem; color: rgba(244, 247, 250, 0.7); }
+
+    /* Why free */
+    .why-free { background: var(--mist); }
+
+    .why-list { display: grid; gap: 1rem; max-width: 700px; }
+
+    .why-list li {
+      padding-left: 1.15rem;
+      border-left: 3px solid var(--dawn);
+      font-size: 0.98rem;
+      color: var(--slate);
+    }
+
+    .why-list strong { color: var(--ink); }
+
+    /* FAQ */
+    .faq { background: var(--paper); }
+
+    details.faq-item {
+      border-top: 1px solid var(--line);
+      padding: 1.05rem 0;
+    }
+    details.faq-item:last-child { border-bottom: 1px solid var(--line); }
+
+    details.faq-item summary {
+      cursor: pointer;
+      font-weight: 750;
+      font-size: 1.02rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    details.faq-item summary::-webkit-details-marker { display: none; }
+
+    details.faq-item summary::after {
+      content: "+";
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--sky);
+      line-height: 1;
+    }
+
+    details.faq-item[open] summary::after { content: "–"; }
+
+    details.faq-item p {
+      margin-top: 0.7rem;
+      color: var(--muted);
+      font-size: 0.96rem;
+      max-width: 65ch;
+    }
+
+    /* Mid CTA band */
+    .mid-cta {
+      background: linear-gradient(135deg, var(--sky-deep), #0f3f50);
+      color: #fff;
+      padding: 2.75rem clamp(1.25rem, 4vw, 3rem);
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .mid-cta h2 {
+      font-family: var(--font-display);
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 600;
+      margin-bottom: 0.55rem;
+    }
+
+    .mid-cta p {
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 1.25rem;
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    .mid-cta .btn-primary {
+      background: #fff;
+      color: var(--sky-deep);
+      box-shadow: none;
+      align-self: flex-start;
+    }
+
+    /* Join / form */
+    .join {
+      background: var(--fog);
+      position: relative;
+    }
+
+    .join::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 40% at 100% 0%, rgba(232, 162, 58, 0.1), transparent 50%),
+        radial-gradient(ellipse 40% 40% at 0% 100%, rgba(31, 111, 139, 0.08), transparent 50%);
+      pointer-events: none;
+    }
+
+    .join .wrap-wide { position: relative; }
+
+    .join-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1.75rem, 4vw, 3rem);
+      align-items: start;
+    }
+
+    .join-benefits h3 {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .benefit-lines { display: grid; gap: 0.85rem; margin-bottom: 1.5rem; }
+
+    .benefit-lines li {
+      display: grid;
+      grid-template-columns: 1.25rem 1fr;
+      gap: 0.65rem;
+      font-size: 0.96rem;
+      color: var(--slate);
+    }
+
+    .benefit-lines svg {
+      width: 18px;
+      height: 18px;
+      color: var(--ok);
+      margin-top: 2px;
+    }
+
+    .form-shell {
+      padding: 1.6rem 1.5rem 1.4rem;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: 0 16px 40px rgba(20, 24, 29, 0.08);
+    }
+
+    .form-shell h3 {
+      font-family: var(--font-display);
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+    }
+
+    .form-shell .form-lead {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .field { margin-bottom: 0.9rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 750;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--ink-2);
+      margin-bottom: 0.35rem;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--fog);
+      border-radius: 8px;
+      padding: 0.85rem 0.95rem;
+      color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .phone-row {
+      display: grid;
+      grid-template-columns: 7.5rem 1fr;
+      gap: 0.55rem;
+    }
+
+    .field input::placeholder { color: #8a97a3; }
+
+    .field input:focus, .field select:focus {
+      outline: none;
+      border-color: var(--sky);
+      box-shadow: 0 0 0 3px rgba(31, 111, 139, 0.15);
+      background: #fff;
+    }
+
+    .btn-submit {
+      width: 100%;
+      margin-top: 0.25rem;
+      border: none;
+      border-radius: 8px;
+      padding: 0.95rem 1.1rem;
+      background: linear-gradient(135deg, var(--sky) 0%, var(--sky-deep) 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.2s ease;
+      box-shadow: 0 8px 22px rgba(21, 86, 108, 0.28);
+    }
+
+    .btn-submit:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.65; cursor: wait; transform: none; }
+
+    .form-meta {
+      margin-top: 0.8rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .form-status {
+      display: none;
+      margin-top: 0.85rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+    }
+    .form-status.show { display: block; }
+    .form-status.ok {
+      background: rgba(15, 118, 110, 0.1);
+      color: var(--ok);
+      border: 1px solid rgba(15, 118, 110, 0.25);
+    }
+    .form-status.err {
+      background: rgba(185, 28, 28, 0.08);
+      color: var(--err);
+      border: 1px solid rgba(185, 28, 28, 0.2);
+    }
+
+    /* Disclaimer + footer */
+    .disclaimer {
+      background: var(--mist);
+      padding: 2.4rem clamp(1.25rem, 4vw, 3rem);
+      font-size: 0.86rem;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+    .disclaimer .wrap { max-width: 820px; }
+    .disclaimer strong { color: var(--ink-2); font-weight: 750; }
+
+    footer {
+      background: var(--ink);
+      color: rgba(244, 247, 250, 0.65);
+      padding: 2rem clamp(1.25rem, 4vw, 3rem);
+      font-size: 0.85rem;
+    }
+
+    .footer-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem 2rem;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-brand {
+      font-family: var(--font-display);
+      color: #fff;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .footer-links a:hover { color: #fff; }
+
+    /* Sticky mobile CTA */
+    .sticky-cta {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 50;
+      display: none;
+      padding: 0.7rem 1rem calc(0.7rem + env(safe-area-inset-bottom));
+      background: rgba(20, 24, 29, 0.94);
+      backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sticky-cta a {
+      display: block;
+      text-align: center;
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--sky), var(--sky-deep));
+      color: #fff;
+      font-weight: 800;
+    }
+
+    @media (max-width: 900px) {
+      .stocks-grid { grid-template-columns: repeat(4, 1fr); }
+      .dp-grid { grid-template-columns: repeat(2, 1fr); }
+      .delivery-layout,
+      .join-layout,
+      .receive-grid,
+      .audience-grid,
+      .problem-grid { grid-template-columns: 1fr; }
+
+      .receive-item:nth-child(odd),
+      .receive-item:nth-child(even) {
+        padding-left: 0;
+        padding-right: 0;
+        border-left: none;
+      }
+
+      .steps { grid-template-columns: 1fr 1fr; }
+      .pillar { grid-template-columns: 1fr; gap: 0.35rem; }
+      .market-row { grid-template-columns: 1fr; }
+      .wa-phone { margin: 0; }
+      .sticky-cta { display: block; }
+      footer { padding-bottom: calc(0.75rem + 56px); }
+      .nav-links a:not(.nav-cta) { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .steps { grid-template-columns: 1fr; }
+      .headline { max-width: 24ch; }
+      .brand { font-size: clamp(2.4rem, 11vw, 3.4rem); }
+      .hero {
+        min-height: clamp(320px, 48vh, 440px);
+        height: auto;
+      }
+      .hero-content { padding-bottom: 3rem; }
+      .phone-row { grid-template-columns: 1fr; }
+      .stocks-grid { grid-template-columns: repeat(2, 1fr); }
+      .dp-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .brand, .headline, .subhead, .cta-row, .hero-note, .reveal, .wa-phone {
+        opacity: 1;
+        transform: none;
+      }
+      .brand-rule { width: min(180px, 40%); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero">
+    <div class="hero-media" aria-hidden="true">
+      <img src="assets/hero-briefing.jpg" alt="" width="2000" height="1333" fetchpriority="high" />
+    </div>
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-glow" aria-hidden="true"></div>
+
+    <nav class="nav" aria-label="Primary">
+      <div class="nav-brand">USStockEdge</div>
+      <div class="nav-links">
+        <a href="#market">Live data</a>
+        <a href="#method">Method</a>
+        <a href="#receive">What you get</a>
+        <a href="#faq">FAQ</a>
+        <a class="nav-cta" href="#join">Join free</a>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <h1 class="brand">USStockEdge</h1>
+      <div class="brand-rule" aria-hidden="true"></div>
+      <p class="headline">Your free 5-minute pre-market briefing.</p>
+      <p class="subhead">
+        Overnight headlines pile up. We organize educational US market context into one short brief — delivered before 9 AM ET — so you can start the session informed, not overwhelmed.
+      </p>
+      <div class="cta-row">
+        <a class="btn-primary" href="#join">Get the free briefing</a>
+        <a class="btn-ghost" href="#market">View live market data</a>
+      </div>
+      <p class="hero-note">Educational content only. Not financial advice. Not a recommendation to buy or sell any security.</p>
+    </div>
+  </header>
+
+  <!-- Live ticker (same Worker/API as the first USStockEdge site) -->
+  <div class="ticker-wrap" aria-label="Live US stock ticker">
+    <div class="ticker-bar">
+      <div class="ticker-status-badge">
+        <span class="live-dot" id="ticker-dot"></span>
+        <span id="ticker-status-text">Loading market data…</span>
+      </div>
+      <span class="ticker-last-update" id="ticker-update-time"></span>
+    </div>
+    <div class="ticker-scroll">
+      <div class="ticker-track" id="ticker-track">
+        <span class="ticker-item">AAPL <span class="t-price">—</span> <span class="up">—</span></span>
+        <span class="ticker-item">NVDA <span class="t-price">—</span> <span class="up">—</span></span>
+        <span class="ticker-item">MSFT <span class="t-price">—</span> <span class="up">—</span></span>
+        <span class="ticker-item">AMZN <span class="t-price">—</span> <span class="up">—</span></span>
+        <span class="ticker-item">GOOGL <span class="t-price">—</span> <span class="up">—</span></span>
+        <span class="ticker-item">META <span class="t-price">—</span> <span class="up">—</span></span>
+        <span class="ticker-item">TSLA <span class="t-price">—</span> <span class="up">—</span></span>
+        <span class="ticker-item">AMD <span class="t-price">—</span> <span class="up">—</span></span>
+      </div>
+    </div>
+  </div>
+
+  <section class="market" id="market" aria-labelledby="market-title">
+    <div class="wrap-wide">
+      <div class="market-head">
+        <div>
+          <p class="kicker">Live US market snapshot</p>
+          <h2 class="section-title" id="market-title">S&amp;P 500 top 20 — prices &amp; moves</h2>
+          <p class="section-sub" style="margin-bottom:0;">Real quotes from the same data feed as our first site. Tap a ticker for day high/low and open context.</p>
+        </div>
+        <div class="market-meta">
+          <div class="live-pill" id="card-live-badge"><span class="live-dot"></span> Live Market Data</div>
+          <span class="refresh-note" id="card-refresh-time">Updating…</span>
+        </div>
+      </div>
+
+      <div id="stocks-grid" class="stocks-grid">
+        <div class="stock-tile loading-tile"><div class="st-sym">AAPL</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">NVDA</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">MSFT</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">AMZN</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">GOOGL</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">META</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">TSLA</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">BRK.B</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">AVGO</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">JPM</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">LLY</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">UNH</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">V</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">XOM</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">MA</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">COST</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">HD</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">WMT</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">NFLX</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+        <div class="stock-tile loading-tile"><div class="st-sym">AMD</div><div class="st-price">—</div><div class="st-chg">—</div></div>
+      </div>
+
+      <div id="detail-panel" class="detail-panel" style="display:none;">
+        <div class="dp-header">
+          <div>
+            <span class="dp-sym" id="dp-sym">—</span>
+            <span class="dp-price" id="dp-price">—</span>
+            <span class="dp-chg" id="dp-chg"></span>
+          </div>
+          <button class="dp-close" type="button" onclick="closeDetail()" aria-label="Close details">✕</button>
+        </div>
+        <div class="dp-grid">
+          <div class="dp-row"><span>Day High</span><strong id="dp-high">—</strong></div>
+          <div class="dp-row"><span>Day Low</span><strong id="dp-low">—</strong></div>
+          <div class="dp-row"><span>Open</span><strong id="dp-open">—</strong></div>
+          <div class="dp-row"><span>Prev Close</span><strong id="dp-prev">—</strong></div>
+          <div class="dp-row"><span>Day Change $</span><strong id="dp-chgd">—</strong></div>
+          <div class="dp-row"><span>Day Range %</span><strong id="dp-vol">—</strong></div>
+        </div>
+        <p class="market-note">Educational purposes only. Not financial advice.</p>
+      </div>
+
+      <div class="movers-table-wrap">
+        <div class="stocks-tabs">
+          <button class="stab active" type="button" onclick="switchTab('gainers', this)">Top Gainers</button>
+          <button class="stab" type="button" onclick="switchTab('losers', this)">Top Losers</button>
+          <button class="stab" type="button" onclick="switchTab('marketcap', this)">By Market Cap</button>
+        </div>
+        <div class="stocks-table-scroll">
+          <table class="stocks-table">
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Symbol</th>
+                <th>Stock Name</th>
+                <th>Latest Price</th>
+                <th>Chg</th>
+                <th>%Chg</th>
+              </tr>
+            </thead>
+            <tbody id="stocks-tbody">
+              <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px;">Loading market data…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <p class="market-note" id="card-note">* Live quotes for educational context. Not financial advice.</p>
+    </div>
+  </section>
+
+  <section class="problem" aria-labelledby="problem-title">
+    <div class="wrap">
+      <p class="kicker">The morning problem</p>
+      <h2 class="section-title" id="problem-title">Too much noise before the open</h2>
+      <p class="section-sub">
+        Most self-directed investors don’t need more random tips — they need a clearer starting point before the US session begins.
+      </p>
+      <div class="problem-grid">
+        <div class="problem-item reveal">
+          <h3>Headlines arrive unsorted</h3>
+          <p>Overnight news, futures moves, and sector chatter hit at once — without a simple map of what deserves research time.</p>
+        </div>
+        <div class="problem-item reveal">
+          <h3>Research time disappears</h3>
+          <p>Scrolling feeds eats the window you meant to use for calm, focused review before the bell.</p>
+        </div>
+        <div class="problem-item reveal">
+          <h3>Context gets skipped</h3>
+          <p>Without sector and theme framing, it’s harder to decide which names deserve a closer look later.</p>
+        </div>
+        <div class="problem-item reveal">
+          <h3>Delivery is scattered</h3>
+          <p>Useful notes live across apps and tabs. A single daily brief keeps your briefing in one place on WhatsApp.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="method" id="method" aria-labelledby="method-title">
+    <div class="wrap">
+      <p class="kicker">Our method</p>
+      <h2 class="section-title" id="method-title">Diversify. Analyse. Track.</h2>
+      <p class="section-sub">
+        The same intelligence stack behind USStockEdge — framed as a 5-minute educational briefing habit, not trade instructions.
+      </p>
+      <div class="pillars">
+        <article class="pillar reveal">
+          <div class="pillar-label">Diversify</div>
+          <div>
+            <h3>Multiple data sources</h3>
+            <p>We pull from more than one market feed so your brief isn’t built on a single noisy signal.</p>
+            <ul class="pillar-list">
+              <li>Price action across major US names</li>
+              <li>Volume and relative strength context</li>
+              <li>Sector leadership / lagging notes</li>
+              <li>Overnight macro and calendar awareness</li>
+            </ul>
+          </div>
+        </article>
+        <article class="pillar reveal">
+          <div class="pillar-label">Analyse</div>
+          <div>
+            <h3>AI-screened market review</h3>
+            <p>Every trading morning, AI helps screen thousands of data points across NYSE &amp; NASDAQ — then we package the educational takeaways.</p>
+            <ul class="pillar-list">
+              <li>Technical summary notes (levels, trend context)</li>
+              <li>Catalysts and themes worth watching</li>
+              <li>2–3 stock profiles for further research</li>
+              <li>Clear reminder: you make your own decisions</li>
+            </ul>
+          </div>
+        </article>
+        <article class="pillar reveal">
+          <div class="pillar-label">Track</div>
+          <div>
+            <h3>Sector &amp; trend context</h3>
+            <p>Before tickers, you get the map: where attention is rotating and what may influence the open.</p>
+            <ul class="pillar-list">
+              <li>Index tone and futures context</li>
+              <li>Sector rotation framing</li>
+              <li>Earnings / Fed calendar awareness when relevant</li>
+              <li>Watchlist ideas for your own study list</li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="receive" id="receive" aria-labelledby="receive-title">
+    <div class="wrap-wide">
+      <p class="kicker">What you receive</p>
+      <h2 class="section-title" id="receive-title">Everything in your free daily briefing</h2>
+      <p class="section-sub">
+        Structured educational information for investors who want clarity before the open — without a long research marathon.
+      </p>
+      <div class="receive-grid">
+        <div class="receive-item reveal">
+          <h3>Pre-market stock briefing</h3>
+          <p>2–3 US stock insights every trading day before 9 AM ET, covering technicals, sector trends, and key catalysts for study.</p>
+        </div>
+        <div class="receive-item reveal">
+          <h3>Technical analysis summaries</h3>
+          <p>Key support/resistance context, moving-average framing, momentum notes, and volume observations for each highlighted name.</p>
+        </div>
+        <div class="receive-item reveal">
+          <h3>Sector &amp; macro context</h3>
+          <p>Fed calendar events, earnings weeks, sector rotations, and macro data that may influence how you research the session.</p>
+        </div>
+        <div class="receive-item reveal">
+          <h3>WhatsApp delivery</h3>
+          <p>The brief lands where you already check messages — so research doesn’t depend on opening five research tabs.</p>
+        </div>
+        <div class="receive-item reveal">
+          <h3>Community discussion</h3>
+          <p>Ask questions, share research angles, and learn alongside other US-focused investors in the group.</p>
+        </div>
+        <div class="receive-item reveal">
+          <h3>Always free — no hidden fees</h3>
+          <p>Free to join and remain. No subscriptions, no commissions, no consulting fees. Unsubscribe anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="delivery" id="delivery" aria-labelledby="delivery-title">
+    <div class="wrap-wide">
+      <div class="delivery-layout">
+        <div>
+          <p class="kicker">How it arrives</p>
+          <h2 class="section-title" id="delivery-title">A short WhatsApp brief before the bell</h2>
+          <p class="section-sub">
+            Every morning before 9 AM ET, our AI-screened educational briefing highlights stocks worth researching — with enough context to decide what you’ll study next.
+          </p>
+          <ul class="check-list">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>AI-screened — refreshed with the latest available market data each trading day</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Instant WhatsApp delivery — direct to your phone</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Designed to read in about five focused minutes</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Educational framing only — not a buy/sell instruction</span>
+            </li>
+          </ul>
+          <a class="btn-primary" href="#join">Request free access</a>
+        </div>
+
+        <div class="wa-phone reveal" aria-label="Sample WhatsApp briefing preview">
+          <div class="wa-top">
+            <div class="wa-avatar">UE</div>
+            <div>
+              <strong>USStockEdge</strong>
+              <span>Daily briefing · before 9:00 AM ET</span>
+            </div>
+          </div>
+          <div class="wa-bubble"><span class="gold">USStockEdge — Morning Brief</span>
+S&amp;P / Nasdaq overnight tone: mixed risk appetite after futures swings.
+
+<span class="gold">Sectors to watch</span>
+• Semiconductors — relative strength vs broader tape
+• Financials — rate-sensitive follow-through
+
+<span class="gold">Research angles today</span>
+1) NVDA — volume + trend context for study
+2) JPM — support/resistance levels to review
+3) AMZN — sector peer comparison notes
+
+Tap a ticker in the group for the fuller educational write-up.
+Educational only — not financial advice.</div>
+          <div class="wa-time">8:42 AM</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="how" id="how" aria-labelledby="how-title">
+    <div class="wrap-wide">
+      <p class="kicker">Simple process</p>
+      <h2 class="section-title" id="how-title">How it works</h2>
+      <p class="section-sub">
+        From form to first briefing — built to be fast. Your job is research; our job is organizing the morning context.
+      </p>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="n">1</div>
+          <h3>Submit the form</h3>
+          <p>Share your name, email, and WhatsApp number. No credit card. No long onboarding.</p>
+        </div>
+        <div class="step reveal">
+          <div class="n">2</div>
+          <h3>We screen the market</h3>
+          <p>Before the open, we run educational scans across NYSE and NASDAQ for notable setups and context.</p>
+        </div>
+        <div class="step reveal">
+          <div class="n">3</div>
+          <h3>Receive daily analysis</h3>
+          <p>By 9 AM ET you get stock profiles with technical summary, key levels, and market context.</p>
+        </div>
+        <div class="step reveal">
+          <div class="n">4</div>
+          <h3>Do your own research</h3>
+          <p>Use the brief as one input. Investment decisions stay yours — always.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="markets" id="markets" aria-labelledby="markets-title">
+    <div class="wrap">
+      <p class="kicker">Coverage</p>
+      <h2 class="section-title" id="markets-title">US exchanges &amp; focus areas</h2>
+      <p class="section-sub">
+        We focus on US-listed equities and the themes that often shape the regular session.
+      </p>
+      <div class="market-rows">
+        <div class="market-row reveal">
+          <strong>NYSE</strong>
+          <div>
+            <p>New York Stock Exchange — large-cap and sector leaders often covered in the morning briefing.</p>
+            <div class="tags">
+              <span>Financials</span><span>Energy</span><span>Industrials</span><span>Healthcare</span>
+            </div>
+          </div>
+        </div>
+        <div class="market-row reveal">
+          <strong>NASDAQ</strong>
+          <div>
+            <p>Growth and technology leadership names that frequently drive overnight and open volatility.</p>
+            <div class="tags">
+              <span>Technology</span><span>AI &amp; Chips</span><span>Biotech</span><span>Consumer Tech</span>
+            </div>
+          </div>
+        </div>
+        <div class="market-row reveal">
+          <strong>S&amp;P 500</strong>
+          <div>
+            <p>Large-cap index focus for tone, leadership, and educational watchlist framing.</p>
+            <div class="tags">
+              <span>Blue Chip</span><span>Dividend</span><span>Growth</span>
+            </div>
+          </div>
+        </div>
+        <div class="market-row reveal">
+          <strong>ETFs</strong>
+          <div>
+            <p>Sector and thematic funds when they help explain rotation and risk appetite.</p>
+            <div class="tags">
+              <span>QQQ</span><span>SPY</span><span>Sector ETFs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="audience" id="audience" aria-labelledby="audience-title">
+    <div class="wrap">
+      <p class="kicker">Who it’s for</p>
+      <h2 class="section-title" id="audience-title">Built for busy, self-directed investors</h2>
+      <p class="section-sub">
+        If you want a repeatable morning briefing habit — not another signal service — this page is for you.
+      </p>
+      <div class="audience-grid">
+        <div class="audience-item reveal">
+          <h3>Professionals with limited morning time</h3>
+          <p>You can give the market five focused minutes before work — not an hour of tab-hopping.</p>
+        </div>
+        <div class="audience-item reveal">
+          <h3>Newer US-market learners</h3>
+          <p>You want structured educational context (sectors, levels, themes) while you build your process.</p>
+        </div>
+        <div class="audience-item reveal">
+          <h3>Experienced retail traders</h3>
+          <p>You already decide your own trades — you just want a cleaner overnight/open digest first.</p>
+        </div>
+        <div class="audience-item reveal">
+          <h3>WhatsApp-first readers</h3>
+          <p>You prefer delivery in-chat instead of another newsletter folder you’ll ignore.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="why-free" id="why-free" aria-labelledby="why-title">
+    <div class="wrap">
+      <p class="kicker">Why it’s free</p>
+      <h2 class="section-title" id="why-title">No payment wall. No “gotcha” upsell on day one.</h2>
+      <p class="section-sub">
+        Facebook Ads reviewers and new members both need clarity: this is free educational market commentary.
+      </p>
+      <ul class="why-list">
+        <li class="reveal"><strong>Free to join and stay.</strong> The daily briefing is provided at no charge.</li>
+        <li class="reveal"><strong>Lead form only.</strong> We ask for name, email, and WhatsApp so we can deliver access — nothing else is required to start.</li>
+        <li class="reveal"><strong>Leave anytime.</strong> Unsubscribe or exit the group whenever you want.</li>
+        <li class="reveal"><strong>Educational disclaimer always on.</strong> We do not promise profits, returns, or “winning” trades.</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="mid-cta">
+    <h2>Start your morning with a clearer briefing habit</h2>
+    <p>Submit the form once — get the free educational US market briefing on WhatsApp.</p>
+    <a class="btn-primary" href="#join">Join free — takes under a minute</a>
+  </div>
+
+  <section class="faq" id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <p class="kicker">FAQ</p>
+      <h2 class="section-title" id="faq-title">Questions before you join</h2>
+      <p class="section-sub">Straight answers so you can decide quickly — and so ad reviewers see clear intent.</p>
+
+      <details class="faq-item">
+        <summary>Is this financial advice?</summary>
+        <p>No. USStockEdge provides educational market commentary and research context only. Nothing we send is a recommendation to buy, sell, or hold any security.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What time do I receive the brief?</summary>
+        <p>On trading days, the educational briefing is aimed for delivery before 9:00 AM ET — so you can review it before the regular US session.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What do I get after submitting the form?</summary>
+        <p>You’ll be directed to a confirmation page with next steps and WhatsApp access details for the free daily briefing group.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Do you guarantee profits or “beat the market”?</summary>
+        <p>No. We never guarantee results. Markets involve risk, including loss of principal. Past performance does not indicate future results.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Which markets do you cover?</summary>
+        <p>US-listed equities with a focus on NYSE, NASDAQ, S&amp;P 500 names, and related sector/thematic ETFs when useful for context.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is my information sold?</summary>
+        <p>No. We use your details to deliver the briefing and related service messages. See our Privacy Policy for full details.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Can I leave later?</summary>
+        <p>Yes. Unsubscribe or leave the WhatsApp group anytime — no lock-in.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="join" id="join" aria-labelledby="join-title">
+    <div class="wrap-wide">
+      <p class="kicker">Join free</p>
+      <h2 class="section-title" id="join-title">Ready for a clearer morning routine?</h2>
+      <p class="section-sub">
+        Submit the form and we’ll send your free educational pre-market briefing access. No payment details required.
+      </p>
+
+      <div class="join-layout">
+        <div class="join-benefits">
+          <h3>What happens after you submit</h3>
+          <ul class="benefit-lines">
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Confirmation page with your next steps</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>WhatsApp access details for the free daily brief</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Pre-market educational analysis before 9 AM ET</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>NYSE &amp; NASDAQ coverage with sector context</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>
+              <span>Leave anytime — no subscription required</span>
+            </li>
+          </ul>
+          <p style="font-size:0.88rem;color:var(--muted);max-width:40ch;">
+            By submitting, you agree we may contact you about your free briefing access. Read our
+            <a href="privacy-policy.html" style="color:var(--sky);font-weight:700;border-bottom:1px solid rgba(31,111,139,0.35);">Privacy Policy</a>
+            and
+            <a href="terms-of-use.html" style="color:var(--sky);font-weight:700;border-bottom:1px solid rgba(31,111,139,0.35);">Terms of Use</a>.
+          </p>
+        </div>
+
+        <div class="form-shell">
+          <h3>Request your free briefing</h3>
+          <p class="form-lead">Name, email, and WhatsApp — that’s all we need to deliver the briefing.</p>
+
+          <!--
+            FORM BACKEND: Replace YOUR_FORMSPREE_ID with your Formspree form ID.
+            https://formspree.io → Form → endpoint
+          -->
+          <form id="lead-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST" novalidate>
+            <div data-cddform="meigu-dong-us10-version-20" data-origin="www.premarketguide.com"></div>
+            <script src="https://www.chatfromforms.com/form-embed.js?v=0.1" defer></script>
+            
+            <!-- <input type="hidden" name="_subject" value="USStockEdge — new lead" />
+            <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
+            <input type="hidden" name="source" value="home" />
+
+            <div class="field">
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required placeholder="Jordan Lee" />
+            </div>
+
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required placeholder="jordan@email.com" />
+            </div>
+
+            <div class="field">
+              <label for="whatsapp">WhatsApp number</label>
+              <div class="phone-row">
+                <select name="country_code" id="country_code" aria-label="Country code">
+                  <option value="+1">US +1</option>
+                  <option value="+1">CA +1</option>
+                  <option value="+44">UK +44</option>
+                  <option value="+61">AU +61</option>
+                  <option value="+65">SG +65</option>
+                  <option value="+60">MY +60</option>
+                  <option value="+91">IN +91</option>
+                  <option value="+852">HK +852</option>
+                  <option value="+81">JP +81</option>
+                  <option value="+82">KR +82</option>
+                  <option value="+49">DE +49</option>
+                  <option value="+33">FR +33</option>
+                  <option value="+971">AE +971</option>
+                </select>
+                <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel-national" required placeholder="555 000 0000" />
+              </div>
+            </div>
+
+            <button class="btn-submit" type="submit" id="submit-btn">Send me the free briefing</button> -->
+            <p class="form-meta">Free educational content. Unsubscribe anytime. We don’t sell your data.</p>
+            <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="disclaimer">
+    <div class="wrap">
+      <strong>Important disclaimer.</strong>
+      USStockEdge provides educational market commentary and research context only.
+      Nothing on this page or in our briefings is investment advice, a solicitation, or a recommendation to buy, sell, or hold any security.
+      Markets involve risk, including loss of principal. Past performance does not indicate future results.
+      Always do your own research or consult a licensed advisor before making investment decisions.
+    </div>
+  </aside>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">USStockEdge</div>
+        <div>© <span id="year"></span> USStockEdge. All rights reserved.</div>
+      </div>
+      <div class="footer-links">
+        <a href="privacy-policy.html">Privacy Policy</a>
+        <a href="terms-of-use.html">Terms of Use</a>
+      </div>
+    </div>
+  </footer>
+
+  <div class="sticky-cta" id="sticky-cta">
+    <a href="#join">Get free pre-market briefing</a>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = String(new Date().getFullYear());
+
+    const revealEls = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("in-view");
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      revealEls.forEach((el, i) => {
+        el.style.transitionDelay = ((i % 4) * 0.08) + "s";
+        io.observe(el);
+      });
+    } else {
+      revealEls.forEach((el) => el.classList.add("in-view"));
+    }
+
+    /* Hide sticky CTA when form is visible */
+    const sticky = document.getElementById("sticky-cta");
+    const joinSec = document.getElementById("join");
+    if (sticky && joinSec && "IntersectionObserver" in window) {
+      const jo = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          sticky.style.display = e.isIntersecting ? "none" : "";
+        });
+      }, { threshold: 0.2 });
+      jo.observe(joinSec);
+    }
+
+    const form = document.getElementById("lead-form");
+    const statusEl = document.getElementById("form-status");
+    const submitBtn = document.getElementById("submit-btn");
+
+    function showStatus(type, message) {
+      statusEl.className = "form-status show " + type;
+      statusEl.textContent = message;
+    }
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const action = form.getAttribute("action") || "";
+      if (action.includes("YOUR_FORMSPREE_ID")) {
+        showStatus(
+          "err",
+          "Form endpoint not connected yet. Replace YOUR_FORMSPREE_ID in home.html with your Formspree form ID."
+        );
+        return;
+      }
+
+      const name = form.name.value.trim();
+      const email = form.email.value.trim();
+      const whatsapp = form.whatsapp.value.trim();
+      const country = form.country_code.value.trim();
+
+      if (!name || !email || !whatsapp) {
+        showStatus("err", "Please fill in all fields.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending…";
+      showStatus("ok", "Submitting your request…");
+
+      try {
+        const res = await fetch(action, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            whatsapp: country + " " + whatsapp,
+            country_code: country,
+            source: "home",
+            _subject: "USStockEdge — new lead"
+          })
+        });
+
+        if (res.ok) {
+            window.location.href = "thank-you.html";
+          return;
+        }
+
+        let msg = "Something went wrong. Please try again in a moment.";
+        try {
+          const data = await res.json();
+          if (data && data.error) msg = data.error;
+        } catch (_) { /* ignore */ }
+        showStatus("err", msg);
+      } catch (_) {
+        showStatus("err", "Network error. Check your connection and try again.");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send me the free briefing";
+      }
+    });
+
+    /* ── Live market data (same Worker as index.html) ───────── */
+    var WORKER_URL = 'https://stockedge-quotes.vtan6288.workers.dev';
+    var FINNHUB_KEY = 'd9goml9r01qq65376m60d9goml9r01qq65376m6g';
+    var DISPLAY_SYMBOLS = ['AAPL','NVDA','MSFT','AMZN','GOOGL','META','TSLA','BRK.B','AVGO','JPM','LLY','UNH','V','XOM','MA','COST','HD','WMT','NFLX','AMD'];
+    var COMPANY_NAMES = {
+      'AAPL':'Apple Inc.','NVDA':'NVIDIA Corporation','MSFT':'Microsoft Corp.',
+      'AMZN':'Amazon.com Inc.','GOOGL':'Alphabet Inc.','META':'Meta Platforms',
+      'TSLA':'Tesla Inc.','BRK.B':'Berkshire Hathaway','AVGO':'Broadcom Inc.',
+      'JPM':'JPMorgan Chase','LLY':'Eli Lilly & Co.','UNH':'UnitedHealth Group',
+      'V':'Visa Inc.','XOM':'Exxon Mobil Corp.','MA':'Mastercard Inc.',
+      'COST':'Costco Wholesale','HD':'Home Depot Inc.','WMT':'Walmart Inc.',
+      'NFLX':'Netflix Inc.','AMD':'Advanced Micro Devices'
+    };
+    var cachedQuotes = {};
+    var currentTab = 'gainers';
+
+    function fetchAllQuotes() {
+      return fetch(WORKER_URL + '?t=' + Date.now(), { cache: 'no-store' }).then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }).catch(function() {
+        var results = {};
+        return DISPLAY_SYMBOLS.reduce(function(chain, sym) {
+          return chain.then(function() {
+            return new Promise(function(res) { setTimeout(res, 200); });
+          }).then(function() {
+            return fetch('https://finnhub.io/api/v1/quote?symbol=' + sym + '&token=' + FINNHUB_KEY)
+              .then(function(r) { return r.json(); })
+              .then(function(d) { if (d && d.c > 0) results[sym] = d; })
+              .catch(function() {});
+          });
+        }, Promise.resolve()).then(function() { return results; });
+      });
+    }
+
+    function fmt(n, dec) {
+      if (dec === undefined) dec = 2;
+      if (n == null || isNaN(n)) return '—';
+      return Number(n).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    }
+
+    function isMarketOpen() {
+      var et = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      var day = et.getDay(), mins = et.getHours() * 60 + et.getMinutes();
+      return day >= 1 && day <= 5 && mins >= 570 && mins < 960;
+    }
+
+    function nowET() {
+      return new Date().toLocaleString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+
+    function refreshMarket() {
+      var dot = document.getElementById('ticker-dot');
+      var statusEl = document.getElementById('ticker-status-text');
+      return fetchAllQuotes().then(function(quoteMap) {
+        var quotes = DISPLAY_SYMBOLS.map(function(s) { return quoteMap[s] || {}; });
+        var open = isMarketOpen();
+        var et = nowET();
+
+        var tickerItems = '';
+        for (var t = 0; t < DISPLAY_SYMBOLS.length; t++) {
+          var qt = quotes[t] || {};
+          var pctt = qt.dp, pt = qt.c, upt = (pctt == null) ? true : pctt >= 0;
+          tickerItems += '<span class="ticker-item">' + DISPLAY_SYMBOLS[t] +
+            ' <span class="t-price">$' + fmt(pt) + '</span>' +
+            ' <span class="' + (upt ? 'up' : 'down') + '">' + (pctt == null ? '—' : ((upt ? '▲ +' : '▼ ') + fmt(pctt) + '%')) + '</span></span>';
+        }
+        document.getElementById('ticker-track').innerHTML = tickerItems + tickerItems;
+        if (dot) dot.className = 'live-dot' + (open ? '' : ' closed');
+        if (statusEl) statusEl.textContent = open ? 'Market Open · Live Data' : 'Market Closed · Last session data';
+        var tu = document.getElementById('ticker-update-time');
+        if (tu) tu.textContent = 'Updated ' + et + ' ET';
+
+        for (var i = 0; i < DISPLAY_SYMBOLS.length; i++) {
+          cachedQuotes[DISPLAY_SYMBOLS[i]] = quotes[i];
+        }
+
+        var tiles = document.querySelectorAll('.stock-tile');
+        for (var j = 0; j < DISPLAY_SYMBOLS.length; j++) {
+          var sym2 = DISPLAY_SYMBOLS[j], qj = quotes[j] || {};
+          var pctj = qj.dp, pricej = qj.c, upj = (pctj == null) ? true : pctj >= 0;
+          var tile = tiles[j];
+          if (!tile) continue;
+          tile.classList.remove('loading-tile', 'up-tile', 'down-tile');
+          if (pctj != null) tile.classList.add(upj ? 'up-tile' : 'down-tile');
+          tile.querySelector('.st-sym').textContent = sym2;
+          tile.querySelector('.st-price').textContent = '$' + fmt(pricej);
+          var chgEl2 = tile.querySelector('.st-chg');
+          chgEl2.textContent = pctj == null ? '—' : ((upj ? '▲ +' : '▼ ') + fmt(pctj) + '%');
+          chgEl2.className = 'st-chg ' + (pctj == null ? '' : (upj ? 'up' : 'down'));
+          tile.setAttribute('data-sym', sym2);
+          tile.onclick = function() { showDetail(this.getAttribute('data-sym')); };
+        }
+
+        renderTable(currentTab);
+
+        var badge = document.getElementById('card-live-badge');
+        if (badge) {
+          badge.className = 'live-pill' + (open ? '' : ' closed');
+          badge.innerHTML = open
+            ? '<span class="live-dot"></span> Live Market Data'
+            : '<span class="live-dot closed"></span> Market Closed · Last session';
+        }
+        var crt = document.getElementById('card-refresh-time');
+        if (crt) crt.textContent = 'Updated ' + et + ' ET';
+
+        // Feed WhatsApp sample with live top movers when available
+        var ranked = DISPLAY_SYMBOLS.map(function(sym, idx) {
+          return { sym: sym, q: quotes[idx] || {} };
+        }).filter(function(x) { return x.q && x.q.dp != null; });
+        ranked.sort(function(a, b) { return Math.abs(b.q.dp) - Math.abs(a.q.dp); });
+        var bubble = document.querySelector('.wa-bubble');
+        if (bubble && ranked.length >= 3) {
+          var lines = '';
+          for (var m = 0; m < 3; m++) {
+            var s = ranked[m], up2 = s.q.dp >= 0;
+            lines += (m + 1) + ') ' + s.sym + ' — $' + fmt(s.q.c) + ' ' + (up2 ? '▲ +' : '▼ ') + fmt(s.q.dp) + '%\n';
+          }
+          bubble.innerHTML =
+            '<span class="gold">USStockEdge — Morning Brief</span>\n' +
+            'Live movers from today’s session data:\n\n' +
+            '<span class="gold">Research angles</span>\n' +
+            lines +
+            '\nEducational only — not financial advice.';
+        }
+      }).catch(function(e) {
+        console.warn('Market data error:', e);
+        if (dot) dot.className = 'live-dot closed';
+        if (statusEl) statusEl.textContent = 'Data delayed — retrying…';
+        var note = document.getElementById('card-note');
+        if (note) note.textContent = 'Data temporarily unavailable. Will retry automatically.';
+      });
+    }
+
+    function renderTable(tab) {
+      var rows = DISPLAY_SYMBOLS.map(function(sym) {
+        return { sym: sym, q: cachedQuotes[sym] };
+      });
+      if (tab === 'gainers') {
+        rows = rows.filter(function(r) { return r.q && r.q.dp > 0; });
+        rows.sort(function(a, b) { return b.q.dp - a.q.dp; });
+      } else if (tab === 'losers') {
+        rows = rows.filter(function(r) { return r.q && r.q.dp < 0; });
+        rows.sort(function(a, b) { return a.q.dp - b.q.dp; });
+      }
+      var html = '';
+      for (var i = 0; i < rows.length; i++) {
+        var sym = rows[i].sym, q = rows[i].q;
+        if (!q || q.c == null) continue;
+        var up = q.dp >= 0;
+        var chgSign = up ? '+' : '';
+        html += '<tr onclick="showDetail(\'' + sym + '\')" data-sym="' + sym + '">' +
+          '<td>' + (i + 1) + '</td>' +
+          '<td class="td-sym">' + sym + '</td>' +
+          '<td class="td-name">' + (COMPANY_NAMES[sym] || sym) + '</td>' +
+          '<td>$' + fmt(q.c) + '</td>' +
+          '<td class="' + (up ? 'td-up' : 'td-down') + '">' + chgSign + '$' + fmt(Math.abs(q.d || 0)) + '</td>' +
+          '<td class="' + (up ? 'td-up' : 'td-down') + '">' + (up ? '+' : '') + fmt(q.dp) + '%</td>' +
+          '</tr>';
+      }
+      var body = document.getElementById('stocks-tbody');
+      if (body) body.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:16px;">No data yet</td></tr>';
+    }
+
+    function switchTab(tab, btn) {
+      currentTab = tab;
+      document.querySelectorAll('.stab').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      closeDetail();
+      renderTable(tab);
+    }
+
+    function showDetail(sym) {
+      var q = cachedQuotes[sym];
+      if (!q || q.c == null) return;
+      var up = q.dp >= 0;
+      document.querySelectorAll('.stock-tile').forEach(function(t) {
+        t.classList.toggle('selected', t.getAttribute('data-sym') === sym);
+      });
+      document.getElementById('detail-panel').style.display = 'block';
+      document.getElementById('dp-sym').textContent = sym;
+      document.getElementById('dp-price').textContent = '$' + fmt(q.c);
+      var chg = document.getElementById('dp-chg');
+      chg.textContent = (up ? '▲ +' : '▼ ') + fmt(q.dp) + '%';
+      chg.className = 'dp-chg ' + (up ? 'up' : 'down');
+      document.getElementById('dp-high').textContent = '$' + fmt(q.h);
+      document.getElementById('dp-low').textContent = '$' + fmt(q.l);
+      document.getElementById('dp-open').textContent = '$' + fmt(q.o);
+      document.getElementById('dp-prev').textContent = '$' + fmt(q.pc);
+      document.getElementById('dp-chgd').textContent = (up ? '+' : '') + '$' + fmt(q.d);
+      var range = (q.h != null && q.l != null && q.pc) ? (((q.h - q.l) / q.pc) * 100) : null;
+      document.getElementById('dp-vol').textContent = range == null ? '—' : fmt(range) + '%';
+    }
+
+    function closeDetail() {
+      var panel = document.getElementById('detail-panel');
+      if (panel) panel.style.display = 'none';
+      document.querySelectorAll('.stock-tile').forEach(function(t) { t.classList.remove('selected'); });
+    }
+
+    refreshMarket();
+    setInterval(refreshMarket, 90000);
+  </script>
+</body>
+</html>
