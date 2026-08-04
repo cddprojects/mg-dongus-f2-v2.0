@@ -110,7 +110,7 @@ button[data-hz-whatsapp-cta] {
 
 .hz-whatsapp__dialog {
   position: relative;
-  padding: unset;
+  padding: unset !important;
   width: min(36rem, 100%);
   max-height: min(90vh, 52rem);
   max-height: min(90dvh, 52rem);
