@@ -203,7 +203,7 @@ body.hz-whatsapp-modal-open { overflow: hidden !important; touch-action: none; }
 @media (max-width: 640px) {
   .hz-whatsapp__trigger {
     right: max(1rem, env(safe-area-inset-right));
-    bottom: max(1rem, env(safe-area-inset-bottom));
+    bottom: max(5rem, env(safe-area-inset-bottom));
     width: 3.5rem;
     height: 3.5rem;
   }
