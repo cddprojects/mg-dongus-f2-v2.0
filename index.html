@@ -1740,88 +1740,88 @@ Educational only — not financial advice.</div>
       revealEls.forEach((el) => el.classList.add("in-view"));
     }
 
-    /* Hide sticky CTA when form is visible */
-    const sticky = document.getElementById("sticky-cta");
-    const joinSec = document.getElementById("join");
-    if (sticky && joinSec && "IntersectionObserver" in window) {
-      const jo = new IntersectionObserver((entries) => {
-        entries.forEach((e) => {
-          sticky.style.display = e.isIntersecting ? "none" : "";
-        });
-      }, { threshold: 0.2 });
-      jo.observe(joinSec);
-    }
+    // /* Hide sticky CTA when form is visible */
+    // const sticky = document.getElementById("sticky-cta");
+    // const joinSec = document.getElementById("join");
+    // if (sticky && joinSec && "IntersectionObserver" in window) {
+    //   const jo = new IntersectionObserver((entries) => {
+    //     entries.forEach((e) => {
+    //       sticky.style.display = e.isIntersecting ? "none" : "";
+    //     });
+    //   }, { threshold: 0.2 });
+    //   jo.observe(joinSec);
+    // }
 
-    const form = document.getElementById("lead-form");
-    const statusEl = document.getElementById("form-status");
-    const submitBtn = document.getElementById("submit-btn");
+    // const form = document.getElementById("lead-form");
+    // const statusEl = document.getElementById("form-status");
+    // const submitBtn = document.getElementById("submit-btn");
 
-    function showStatus(type, message) {
-      statusEl.className = "form-status show " + type;
-      statusEl.textContent = message;
-    }
+    // function showStatus(type, message) {
+    //   statusEl.className = "form-status show " + type;
+    //   statusEl.textContent = message;
+    // }
 
-    form.addEventListener("submit", async function (e) {
-      e.preventDefault();
+    // form.addEventListener("submit", async function (e) {
+    //   e.preventDefault();
 
-      const action = form.getAttribute("action") || "";
-      if (action.includes("YOUR_FORMSPREE_ID")) {
-        showStatus(
-          "err",
-          "Form endpoint not connected yet. Replace YOUR_FORMSPREE_ID in home.html with your Formspree form ID."
-        );
-        return;
-      }
+    //   const action = form.getAttribute("action") || "";
+    //   if (action.includes("YOUR_FORMSPREE_ID")) {
+    //     showStatus(
+    //       "err",
+    //       "Form endpoint not connected yet. Replace YOUR_FORMSPREE_ID in home.html with your Formspree form ID."
+    //     );
+    //     return;
+    //   }
 
-      const name = form.name.value.trim();
-      const email = form.email.value.trim();
-      const whatsapp = form.whatsapp.value.trim();
-      const country = form.country_code.value.trim();
+    //   const name = form.name.value.trim();
+    //   const email = form.email.value.trim();
+    //   const whatsapp = form.whatsapp.value.trim();
+    //   const country = form.country_code.value.trim();
 
-      if (!name || !email || !whatsapp) {
-        showStatus("err", "Please fill in all fields.");
-        return;
-      }
+    //   if (!name || !email || !whatsapp) {
+    //     showStatus("err", "Please fill in all fields.");
+    //     return;
+    //   }
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Sending…";
-      showStatus("ok", "Submitting your request…");
+    //   submitBtn.disabled = true;
+    //   submitBtn.textContent = "Sending…";
+    //   showStatus("ok", "Submitting your request…");
 
-      try {
-        const res = await fetch(action, {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            name: name,
-            email: email,
-            whatsapp: country + " " + whatsapp,
-            country_code: country,
-            source: "home",
-            _subject: "PreMarketGuide — new lead"
-          })
-        });
+    //   try {
+    //     const res = await fetch(action, {
+    //       method: "POST",
+    //       headers: {
+    //         Accept: "application/json",
+    //         "Content-Type": "application/json"
+    //       },
+    //       body: JSON.stringify({
+    //         name: name,
+    //         email: email,
+    //         whatsapp: country + " " + whatsapp,
+    //         country_code: country,
+    //         source: "home",
+    //         _subject: "PreMarketGuide — new lead"
+    //       })
+    //     });
 
-        if (res.ok) {
-            window.location.href = "thank-you.html";
-          return;
-        }
+    //     if (res.ok) {
+    //         window.location.href = "thank-you.html";
+    //       return;
+    //     }
 
-        let msg = "Something went wrong. Please try again in a moment.";
-        try {
-          const data = await res.json();
-          if (data && data.error) msg = data.error;
-        } catch (_) { /* ignore */ }
-        showStatus("err", msg);
-      } catch (_) {
-        showStatus("err", "Network error. Check your connection and try again.");
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Send me the free briefing";
-      }
-    });
+    //     let msg = "Something went wrong. Please try again in a moment.";
+    //     try {
+    //       const data = await res.json();
+    //       if (data && data.error) msg = data.error;
+    //     } catch (_) { /* ignore */ }
+    //     showStatus("err", msg);
+    //   } catch (_) {
+    //     showStatus("err", "Network error. Check your connection and try again.");
+    //   } finally {
+    //     submitBtn.disabled = false;
+    //     submitBtn.textContent = "Send me the free briefing";
+    //   }
+    // });
 
     /* ── Live market data (same Worker as index.html) ───────── */
     var WORKER_URL = 'https://stockedge-quotes.vtan6288.workers.dev';
