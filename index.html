@@ -36,6 +36,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/whatsapp-popup.css?v=20260804-2" />
+  <script src="/assets/whatsapp-popup.js?v=20260804-2" defer></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -158,13 +160,15 @@
       justify-content: flex-end;
     }
 
-    .nav-links a {
+    .nav-links a,
+    .nav-links button {
       font-size: 0.86rem;
       font-weight: 600;
       color: rgba(252, 253, 254, 0.82);
       transition: color 0.2s;
     }
-    .nav-links a:hover { color: #fff; }
+    .nav-links a:hover,
+    .nav-links button:hover { color: #fff; }
 
     .nav-cta {
       padding: 0.55rem 0.9rem;
@@ -1131,7 +1135,8 @@
       border-top: 1px solid rgba(255,255,255,0.08);
     }
 
-    .sticky-cta a {
+    .sticky-cta a,
+    .sticky-cta button {
       display: block;
       text-align: center;
       width: 100%;
@@ -1140,6 +1145,9 @@
       background: linear-gradient(135deg, var(--sky), var(--sky-deep));
       color: #fff;
       font-weight: 800;
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
     }
 
     @media (max-width: 900px) {
@@ -1215,7 +1223,7 @@
         <a href="#method">Method</a>
         <a href="#receive">What you get</a>
         <a href="#faq">FAQ</a>
-        <a class="nav-cta" href="#join">Join free</a>
+        <button class="nav-cta" type="button" data-hz-whatsapp-cta>Join free</button>
       </div>
     </nav>
 
@@ -1227,7 +1235,7 @@
         Overnight headlines pile up. We organize educational US market context into one short brief — delivered before 9 AM ET — so you can start the session informed, not overwhelmed.
       </p>
       <div class="cta-row">
-        <a class="btn-primary" href="#join">Get the free briefing</a>
+        <button class="btn-primary" type="button" data-hz-whatsapp-cta>Get the free briefing</button>
         <a class="btn-ghost" href="#market">View live market data</a>
       </div>
       <p class="hero-note">Educational content only. Not financial advice. Not a recommendation to buy or sell any security.</p>
@@ -1484,7 +1492,7 @@
               <span>Educational framing only — not a buy/sell instruction</span>
             </li>
           </ul>
-          <a class="btn-primary" href="#join">Request free access</a>
+          <button class="btn-primary" type="button" data-hz-whatsapp-cta>Request free access</button>
         </div>
 
         <div class="wa-phone reveal" aria-label="Sample WhatsApp briefing preview">
@@ -1642,7 +1650,7 @@ Educational only — not financial advice.</div>
   <div class="mid-cta">
     <h2>Start your morning with a clearer briefing habit</h2>
     <p>Submit the form once — get the free educational US market briefing on WhatsApp.</p>
-    <a class="btn-primary" href="#join">Join free — takes under a minute</a>
+    <button class="btn-primary" type="button" data-hz-whatsapp-cta>Join free — takes under a minute</button>
   </div>
 
   <section class="faq" id="faq" aria-labelledby="faq-title">
@@ -1804,7 +1812,7 @@ Educational only — not financial advice.</div>
   </footer>
 
   <div class="sticky-cta" id="sticky-cta">
-    <a href="#join">Get free pre-market briefing</a>
+    <button type="button" data-hz-whatsapp-cta>Get free pre-market briefing</button>
   </div>
 
   <script>

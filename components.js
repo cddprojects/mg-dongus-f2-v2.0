@@ -53,6 +53,7 @@
       padding: 9px 20px; border-radius: 8px;\
       font-size: 0.88rem; font-weight: 600; text-decoration: none;\
       transition: background 0.2s, transform 0.15s;\
+      border: 0; cursor: pointer; font-family: inherit;\
     }\
     .nav-cta:hover { background: #1ebe5a; transform: translateY(-1px); }\
     .nav-hamburger {\
@@ -75,13 +76,14 @@
       padding: 12px 5% 18px; z-index: 99; flex-direction: column; gap: 2px;\
     }\
     .nav-drawer.open { display: flex; }\
-    .nav-drawer a {\
+    .nav-drawer a, .nav-drawer button {\
       color: rgba(255,255,255,0.7); text-decoration: none;\
       font-size: 0.95rem; font-weight: 500;\
       padding: 11px 14px; border-radius: 8px;\
       transition: background 0.15s, color 0.15s;\
+      border: 0; font-family: inherit; cursor: pointer;\
     }\
-    .nav-drawer a:hover { background: rgba(255,255,255,0.08); color: #fff; }\
+    .nav-drawer a:hover, .nav-drawer button:hover { background: rgba(255,255,255,0.08); color: #fff; }\
     .nav-drawer .drawer-cta {\
       margin-top: 8px; background: var(--wa, #25D366); color: #fff;\
       text-align: center; font-weight: 700; border-radius: 10px; padding: 13px;\
@@ -111,8 +113,9 @@
       letter-spacing: 0.5px; margin-bottom: 14px;\
     }\
     .footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }\
-    .footer-links a { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.15s; }\
-    .footer-links a:hover { color: rgba(255,255,255,0.75); }\
+    .footer-links a, .footer-links button { color: rgba(255,255,255,0.4); text-decoration: none; transition: color 0.15s; }\
+    .footer-links button { padding: 0; border: 0; background: none; font: inherit; cursor: pointer; }\
+    .footer-links a:hover, .footer-links button:hover { color: rgba(255,255,255,0.75); }\
     .disclaimer {\
       max-width: 1100px; margin: 0 auto;\
       padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.07);\
@@ -141,7 +144,7 @@
         <a href="index.html#faq">FAQ</a>\
       </div>\
       <div class="nav-right">\
-        <a class="nav-cta" href="index.html#join">' + WA_ICON + '<span>Join Free</span></a>\
+        <button class="nav-cta" type="button" data-hz-whatsapp-cta>' + WA_ICON + '<span>Join Free</span></button>\
         <button class="nav-hamburger" id="hamburger" aria-label="Open menu">\
           <span></span><span></span><span></span>\
         </button>\
@@ -153,7 +156,7 @@
       <a href="index.html#markets">Markets</a>\
       <a href="index.html#testimonials">Community</a>\
       <a href="index.html#faq">FAQ</a>\
-      <a href="index.html#join" class="drawer-cta">See Tomorrow\'s Analysis</a>\
+      <button type="button" class="drawer-cta" data-hz-whatsapp-cta>See Tomorrow\'s Analysis</button>\
     </div>\
   ';
 
@@ -173,7 +176,7 @@
           <ul>\
             <li><a href="index.html#how">How It Works</a></li>\
             <li><a href="index.html#features">What You Get</a></li>\
-            <li><a href="index.html#join">Join Free</a></li>\
+            <li><button type="button" data-hz-whatsapp-cta>Join Free</button></li>\
             <li><a href="index.html#faq">FAQ</a></li>\
           </ul>\
         </div>\
