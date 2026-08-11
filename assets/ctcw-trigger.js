@@ -161,28 +161,18 @@
     });
   }
 
-  function storeTriggerLabel(trigger) {
-    if (!trigger.dataset.ctcwLabel) {
-      trigger.dataset.ctcwLabel = trigger.textContent.trim();
-    }
-  }
-
   function setTriggerFeedback(trigger, active) {
     if (!trigger || !isMobileSticky()) return;
-
-    storeTriggerLabel(trigger);
 
     if (active) {
       activeTrigger = trigger;
       trigger.classList.add("is-triggered");
       trigger.setAttribute("aria-busy", "true");
-      trigger.textContent = "Opening…";
       return;
     }
 
     trigger.classList.remove("is-triggered", "is-pressed");
     trigger.removeAttribute("aria-busy");
-    trigger.textContent = trigger.dataset.ctcwLabel || "Get free pre-market briefing";
     if (activeTrigger === trigger) activeTrigger = null;
   }
 
