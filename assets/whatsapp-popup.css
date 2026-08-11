@@ -21,7 +21,7 @@ button[data-hz-whatsapp-cta] {
   right: max(1.25rem, env(safe-area-inset-right));
   bottom: max(1.25rem, env(safe-area-inset-bottom));
   z-index: 9998;
-  display: inline-flex;
+  display: none; /* hidden; popup still opens via data-hz-whatsapp-cta */
   align-items: center;
   justify-content: flex-start;
   width: 3.5rem;
@@ -199,6 +199,11 @@ button[data-hz-whatsapp-cta] {
 
 .hz-whatsapp__form iframe { display: block; width: 100% !important; max-width: 100%; border: 0; }
 body.hz-whatsapp-modal-open { overflow: hidden !important; touch-action: none; }
+body.hz-whatsapp-modal-open #ctcw-frame-10 {
+  visibility: hidden !important;
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
 
 @media (max-width: 640px) {
   .hz-whatsapp__trigger {

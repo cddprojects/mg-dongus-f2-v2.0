@@ -41,6 +41,8 @@
   <link rel="stylesheet" href="/assets/whatsapp-popup.css?v=20260804-3" />
   <script src="/assets/whatsapp-popup.js?v=20260804-3" defer></script>
   <script src="https://www.chatfromforms.com/form-embed.js?v=0.1" defer></script>
+  <script src="https://ctc.chatfromforms.com/embed.js.php?id=10&key=7c660c334cde4b2ea3d6c15590cf2d0d9b116e21f3160b05"></script>
+  <script src="/assets/ctcw-trigger.js" defer></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -260,6 +262,7 @@
       cursor: pointer;
     }
     .btn-primary:hover { filter: brightness(1.06); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(1px) scale(0.98); filter: brightness(0.95); }
 
     .btn-ghost {
       display: inline-flex;
@@ -1143,14 +1146,30 @@
       display: block;
       text-align: center;
       width: 100%;
-      padding: 0.85rem 1rem;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--sky), var(--sky-deep));
-      color: #fff;
       font-weight: 800;
-      border: 0;
-      cursor: pointer;
       font-family: inherit;
+    }
+
+    .sticky-cta .btn-primary {
+      padding: 0.85rem 1rem;
+      font-size: 0.98rem;
+    }
+
+    @media (max-width: 900px) {
+      .sticky-cta .btn-primary:active,
+      .sticky-cta .btn-primary.is-pressed {
+        transform: translateY(1px) scale(0.98);
+        filter: brightness(0.92);
+        box-shadow: 0 4px 14px rgba(21, 86, 108, 0.28);
+      }
+
+      .sticky-cta .btn-primary.is-triggered {
+        transform: translateY(1px) scale(0.98);
+        filter: brightness(0.9);
+        opacity: 0.88;
+        cursor: wait;
+        box-shadow: 0 4px 14px rgba(21, 86, 108, 0.28);
+      }
     }
 
     @media (max-width: 900px) {
@@ -1717,7 +1736,7 @@ Educational only — not financial advice.</div>
   </footer>
 
   <div class="sticky-cta" id="sticky-cta">
-    <button type="button" data-hz-whatsapp-cta>Get free pre-market briefing</button>
+    <button type="button" class="btn-primary" data-ctcw-trigger>Get free pre-market briefing</button>
   </div>
 
   <script>
