@@ -5,6 +5,7 @@
 (function () {
   "use strict";
 
+  var FLOATING_BTN_ID = "m-floating-btn";
   var TRUSTED_ORIGINS = [
     "https://www.premarketguide.com",
     "https://premarketguide.com",
@@ -19,8 +20,14 @@
     return /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(origin);
   }
 
-  function openLauncher() {
+  function tagFloatingButton() {
     var button = document.querySelector("[data-widget-button]");
+    if (button) button.id = FLOATING_BTN_ID;
+    return button;
+  }
+
+  function openLauncher() {
+    var button = tagFloatingButton();
     if (!button) return false;
 
     button.dispatchEvent(new MouseEvent("click", {
@@ -41,6 +48,12 @@
       document.addEventListener("DOMContentLoaded", openLauncher, { once: true });
       window.addEventListener("load", openLauncher, { once: true });
     }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", tagFloatingButton);
+  } else {
+    tagFloatingButton();
   }
 
   window.addEventListener("message", handleOpenMessage);
