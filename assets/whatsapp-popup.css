@@ -21,7 +21,9 @@ button[data-hz-whatsapp-cta] {
   right: max(1.25rem, env(safe-area-inset-right));
   bottom: max(1.25rem, env(safe-area-inset-bottom));
   z-index: 9998;
-  display: none; /* hidden; popup still opens via data-hz-whatsapp-cta */
+  display: none !important; /* hidden; popup still opens via data-hz-whatsapp-cta */
+  visibility: hidden !important;
+  pointer-events: none !important;
   align-items: center;
   justify-content: flex-start;
   width: 3.5rem;
