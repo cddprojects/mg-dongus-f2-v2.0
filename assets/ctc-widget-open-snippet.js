@@ -1,7 +1,6 @@
 /**
  * Paste this into widget 11 Head or Body custom code only.
  * Do not paste this into widget 10 — that widget must keep id "10".
- * Origin is not enough: both widgets trust premarketguide.com.
  */
 (function () {
   "use strict";
@@ -10,8 +9,15 @@
   var FLOATING_BTN_ID = "waf2";
   var MAX_TRIES = 20;
 
+  function getFloatingButton() {
+    return document.querySelector(".ctcw-widget-trigger #waf2")
+      || document.querySelector(".ctcw-widget-trigger [data-widget-button]")
+      || document.querySelector(".ctcw-widget-trigger .ctcw-cta-button");
+  }
+
   function tagFloatingButton() {
-    var button = document.querySelector("[data-widget-button]")
+    var button = getFloatingButton()
+      || document.querySelector("[data-widget-button]")
       || document.querySelector(".ctcw-cta-button");
     if (!button) return false;
     button.id = FLOATING_BTN_ID;
