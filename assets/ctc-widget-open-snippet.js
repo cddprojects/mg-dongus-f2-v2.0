@@ -5,7 +5,7 @@
 (function () {
   "use strict";
 
-  var FLOATING_BTN_ID = "m-floating-btn";
+  var FLOATING_BTN_ID = "waf2";
   var TRUSTED_ORIGINS = [
     "https://www.premarketguide.com",
     "https://premarketguide.com",
@@ -41,7 +41,7 @@
 
   function handleOpenMessage(event) {
     if (!event || !event.data || event.data.type !== "ctcw:open") return;
-    if (String(event.data.id) !== String(window.CTCW_WIDGET_ID || "10")) return;
+    if (String(event.data.id) !== String(window.CTCW_WIDGET_ID || "11")) return;
     if (!isTrustedOrigin(event.origin)) return;
 
     if (!openLauncher()) {

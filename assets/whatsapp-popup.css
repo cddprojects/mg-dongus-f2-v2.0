@@ -201,7 +201,7 @@ button[data-hz-whatsapp-cta] {
 
 .hz-whatsapp__form iframe { display: block; width: 100% !important; max-width: 100%; border: 0; }
 body.hz-whatsapp-modal-open { overflow: hidden !important; touch-action: none; }
-body.hz-whatsapp-modal-open #ctcw-frame-10 {
+body.hz-whatsapp-modal-open #ctcw-frame-11 {
   visibility: hidden !important;
   pointer-events: none !important;
   z-index: 1 !important;

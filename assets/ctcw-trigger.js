@@ -1,14 +1,14 @@
 (function () {
   "use strict";
 
-  var FRAME_ID = "ctcw-frame-10";
-  var WIDGET_ID = "10";
+  var FRAME_ID = "ctcw-frame-11";
+  var WIDGET_ID = "11";
   var DEFAULT_ORIGIN = "https://ctc.chatfromforms.com";
   var MOBILE_QUERY = "(max-width: 900px)";
   var FEEDBACK_MS = 1800;
   var CTC = {
-    widgetId: 10,
-    publicKey: "7c660c334cde4b2ea3d6c15590cf2d0d9b116e21f3160b05",
+    widgetId: 11,
+    publicKey: "793738b628145012fdfbfc6f2d3a194e3c9fef124c336566",
     resolveUrl: "https://ctc.chatfromforms.com/resolve-widget-destination.php",
     siteName: "PreMarketGuide",
     message: "Hi, I'd like to join the free {site_name} daily market analysis group."
