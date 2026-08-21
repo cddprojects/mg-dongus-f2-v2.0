@@ -9,11 +9,17 @@
     publicKey: "793738b628145012fdfbfc6f2d3a194e3c9fef124c336566",
     resolveUrl: "https://ctc.chatfromforms.com/resolve-widget-destination.php",
     siteName: "PreMarketGuide",
-    message: "Hi, I'd like to join the free {site_name} daily market analysis group."
+    message: "Hi, I'd like to join the free {site_name} daily market analysis group.",
+    fallbackNumber: "13183948645"
   };
-  var pendingTab = null;
-  var opening = false;
-  var filled = false;
+
+  var cachedUrl = buildWhatsAppUrl(CTC.fallbackNumber);
+
+  function buildWhatsAppUrl(phone) {
+    var text = CTC.message.replace(/\{site_name\}/g, CTC.siteName);
+    var digits = String(phone).replace(/\D+/g, "");
+    return "https://wa.me/" + digits + "?text=" + encodeURIComponent(text);
+  }
 
   function frameBelongsToThisWidget(iframe) {
     if (!iframe) return false;
@@ -38,12 +44,6 @@
     return null;
   }
 
-  function buildWhatsAppUrl(phone) {
-    var text = CTC.message.replace(/\{site_name\}/g, CTC.siteName);
-    var digits = String(phone).replace(/\D+/g, "");
-    return "https://wa.me/" + digits + "?text=" + encodeURIComponent(text);
-  }
-
   function resolveWhatsAppUrl() {
     return fetch(CTC.resolveUrl, {
       method: "POST",
@@ -63,41 +63,19 @@
     });
   }
 
-  function navigatePendingTab(url) {
-    if (!url || filled) return;
-    filled = true;
-    opening = false;
-    if (pendingTab && !pendingTab.closed) {
-      pendingTab.location.href = url;
-      try { pendingTab.opener = null; } catch (err) {}
-      pendingTab = null;
-      return;
-    }
-    window.open(url, "_blank");
-    pendingTab = null;
-  }
+  function openWhatsApp() {
+    var url = cachedUrl;
+    var tab = window.open(url, "_blank");
+    if (!tab) window.location.href = url;
 
-  function askIframeToOpen() {
     var iframe = getFrame();
-    if (!iframe || !iframe.contentWindow) return;
-    iframe.contentWindow.postMessage({
-      type: "ctcw:open",
-      id: WIDGET_ID,
-      sourceUrl: window.location.href
-    }, "*");
-  }
-
-  function openFromSticky() {
-    pendingTab = window.open("about:blank", "_blank");
-    opening = true;
-    filled = false;
-    askIframeToOpen();
-    resolveWhatsAppUrl().then(navigatePendingTab).catch(function () {
-      if (filled) return;
-      if (pendingTab && !pendingTab.closed) pendingTab.close();
-      pendingTab = null;
-      opening = false;
-    });
+    if (iframe && iframe.contentWindow) {
+      iframe.contentWindow.postMessage({
+        type: "ctcw:open",
+        id: WIDGET_ID,
+        sourceUrl: window.location.href
+      }, "*");
+    }
   }
 
   function handleClick(event) {
@@ -105,15 +83,12 @@
     if (!trigger) return;
     event.preventDefault();
     event.stopPropagation();
-    openFromSticky();
+    openWhatsApp();
   }
 
-  window.addEventListener("message", function (event) {
-    if (!event.data || event.data.type !== "ctcw:destination") return;
-    if (String(event.data.id) !== WIDGET_ID) return;
-    if (!opening) return;
-    navigatePendingTab(event.data.url);
-  });
+  resolveWhatsAppUrl().then(function (url) {
+    cachedUrl = url;
+  }).catch(function () {});
 
   document.addEventListener("click", handleClick, true);
 }());
