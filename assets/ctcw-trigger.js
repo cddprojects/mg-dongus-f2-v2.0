@@ -19,8 +19,38 @@
   var feedbackTimer = null;
   var pendingTab = null;
 
+  function frameBelongsToThisWidget(iframe) {
+    if (!iframe) return false;
+    if (iframe.id === FRAME_ID) return true;
+
+    var src = iframe.getAttribute("src") || "";
+    try {
+      return new URL(src, window.location.href).searchParams.get("id") === WIDGET_ID;
+    } catch (err) {
+      return new RegExp("[?&]id=" + WIDGET_ID + "(?:&|$)").test(src);
+    }
+  }
+
   function getFrame() {
-    return document.getElementById(FRAME_ID);
+    var byId = document.getElementById(FRAME_ID);
+    if (frameBelongsToThisWidget(byId)) return byId;
+
+    var frames = document.querySelectorAll('iframe[id^="ctcw-frame-"], iframe[src*="ctc.chatfromforms.com"]');
+    for (var i = 0; i < frames.length; i++) {
+      if (frameBelongsToThisWidget(frames[i])) return frames[i];
+    }
+    return null;
+  }
+
+  function hideForeignWidgets() {
+    var frames = document.querySelectorAll('iframe[id^="ctcw-frame-"]');
+    for (var i = 0; i < frames.length; i++) {
+      if (frameBelongsToThisWidget(frames[i])) continue;
+      frames[i].setAttribute("hidden", "");
+      frames[i].style.setProperty("display", "none", "important");
+      frames[i].style.setProperty("visibility", "hidden", "important");
+      frames[i].style.setProperty("pointer-events", "none", "important");
+    }
   }
 
   function isMobileSticky() {
@@ -67,24 +97,18 @@
   }
 
   function postOpenMessage(iframe) {
+    if (!frameBelongsToThisWidget(iframe) || !iframe.contentWindow) return;
+
     var payload = {
       type: "ctcw:open",
       id: WIDGET_ID,
       sourceUrl: window.location.href
     };
-    var targetOrigin = getFrameOrigin(iframe);
+    var targetOrigin = getFrameOrigin(iframe) || DEFAULT_ORIGIN;
 
     try {
       iframe.contentWindow.postMessage(payload, targetOrigin);
     } catch (err) {}
-
-    try {
-      iframe.contentWindow.postMessage(payload, DEFAULT_ORIGIN);
-    } catch (err2) {}
-
-    try {
-      iframe.contentWindow.postMessage(payload, "*");
-    } catch (err3) {}
   }
 
   function triggerCtcWidget() {
@@ -253,8 +277,10 @@
 
   window.triggerCtcWidget = triggerCtcWidget;
 
+  hideForeignWidgets();
   watchFrame(getFrame());
   window.setInterval(function () {
+    hideForeignWidgets();
     watchFrame(getFrame());
   }, 1000);
 }());
