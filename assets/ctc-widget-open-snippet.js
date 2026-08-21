@@ -1,27 +1,21 @@
 /**
- * Paste this into widget 11 Head or Body custom code only.
- * Do not paste this into widget 10 — that widget must keep id "10".
+ * Paste BOTH scripts into widget 11 custom code only (Head or Body).
+ * Do not paste this into widget 10.
  */
 (function () {
   "use strict";
 
-  var THIS_WIDGET_ID = "11";
   var FLOATING_BTN_ID = "waf2";
   var MAX_TRIES = 20;
 
-  function getFloatingButton() {
-    return document.querySelector(".ctcw-widget-trigger #waf2")
-      || document.querySelector(".ctcw-widget-trigger [data-widget-button]")
-      || document.querySelector(".ctcw-widget-trigger .ctcw-cta-button");
-  }
-
   function tagFloatingButton() {
-    var button = getFloatingButton()
+    var button = document.querySelector(".ctcw-widget-trigger [data-widget-button]")
+      || document.querySelector(".ctcw-widget-trigger .ctcw-cta-button")
       || document.querySelector("[data-widget-button]")
       || document.querySelector(".ctcw-cta-button");
     if (!button) return false;
     button.id = FLOATING_BTN_ID;
-    return button;
+    return true;
   }
 
   function tryTag(attempt) {
@@ -30,28 +24,81 @@
     window.setTimeout(function () { tryTag(attempt + 1); }, 100);
   }
 
-  function openLauncher() {
-    var button = tagFloatingButton();
-    if (!button) return false;
-    button.click();
-    return true;
-  }
-
-  function handleOpenMessage(event) {
-    if (!event || !event.data || event.data.type !== "ctcw:open") return;
-    if (String(event.data.id) !== THIS_WIDGET_ID) return;
-
-    if (!openLauncher()) {
-      document.addEventListener("DOMContentLoaded", openLauncher, { once: true });
-      window.addEventListener("load", openLauncher, { once: true });
-    }
-  }
-
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", function () { tryTag(0); });
   } else {
     tryTag(0);
   }
+}());
 
-  window.addEventListener("message", handleOpenMessage);
+(function () {
+  "use strict";
+
+  var THIS_WIDGET_ID = "11";
+  var TRUSTED_ORIGINS = [
+    "https://www.premarketguide.com",
+    "https://premarketguide.com",
+    "http://localhost:8080"
+  ];
+
+  function isTrustedOrigin(origin) {
+    if (!origin) return false;
+    if (TRUSTED_ORIGINS.indexOf(origin) !== -1) return true;
+    if (/^https:\/\/([a-z0-9-]+\.)?premarketguide\.com$/i.test(origin)) return true;
+    return /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+  }
+
+  function getFloatingButton() {
+    return document.querySelector(".ctcw-widget-trigger #waf2")
+      || document.querySelector(".ctcw-widget-trigger [data-widget-button]")
+      || document.querySelector(".ctcw-widget-trigger .ctcw-cta-button");
+  }
+
+  function buildWhatsAppUrl(phone) {
+    var config = window.CTCW_WIDGET || {};
+    var message = String(config.prefilledMessage || "")
+      .replace(/\{site_name\}/g, config.websiteName || "PreMarketGuide");
+    var digits = String(phone).replace(/\D+/g, "");
+    return "https://wa.me/" + digits + "?text=" + encodeURIComponent(message);
+  }
+
+  function resolveDestination(sourceUrl) {
+    var config = window.CTCW_WIDGET || {};
+    return fetch(config.destinationResolveUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        widget_id: config.widgetId,
+        public_key: config.publicKey,
+        source_url: sourceUrl || document.referrer || ""
+      })
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      if (!data || !data.success || !data.full_number) {
+        throw new Error((data && data.message) || "Unable to resolve destination");
+      }
+      return buildWhatsAppUrl(data.full_number);
+    });
+  }
+
+  window.addEventListener("message", function (event) {
+    if (!event.data || event.data.type !== "ctcw:open") return;
+    if (String(event.data.id) !== THIS_WIDGET_ID) return;
+    if (!isTrustedOrigin(event.origin)) return;
+    if (!event.source) return;
+
+    var button = getFloatingButton();
+    if (button) button.id = "waf2";
+
+    resolveDestination(event.data.sourceUrl).then(function (url) {
+      event.source.postMessage({
+        type: "ctcw:destination",
+        id: THIS_WIDGET_ID,
+        url: url
+      }, event.origin);
+    }).catch(function () {
+      if (button) button.click();
+    });
+  });
 }());
