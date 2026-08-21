@@ -3,11 +3,15 @@
 
   var FRAME_ID = "ctcw-frame-11";
   var WIDGET_ID = "11";
-  var MOBILE_QUERY = "(max-width: 900px)";
-  var ICON_SIZE = 68;
+  var CTC = {
+    widgetId: 11,
+    publicKey: "793738b628145012fdfbfc6f2d3a194e3c9fef124c336566",
+    resolveUrl: "https://ctc.chatfromforms.com/resolve-widget-destination.php",
+    siteName: "PreMarketGuide",
+    message: "Hi, I'd like to join the free {site_name} daily market analysis group."
+  };
 
-  var savedFrameStyle = null;
-  var covering = false;
+  var pendingTab = null;
 
   function frameBelongsToThisWidget(iframe) {
     if (!iframe) return false;
@@ -32,83 +36,76 @@
     return null;
   }
 
-  function hideForeignWidgets() {
-    var frames = document.querySelectorAll('iframe[id^="ctcw-frame-"]');
-    for (var i = 0; i < frames.length; i++) {
-      if (frameBelongsToThisWidget(frames[i])) continue;
-      frames[i].setAttribute("hidden", "");
-      frames[i].style.setProperty("display", "none", "important");
-      frames[i].style.setProperty("visibility", "hidden", "important");
-      frames[i].style.setProperty("pointer-events", "none", "important");
+  function clickFrameLauncher() {
+    var iframe = getFrame();
+    if (!iframe || !iframe.contentWindow) return false;
+
+    try {
+      iframe.contentWindow.postMessage({
+        type: "ctcw:open",
+        id: WIDGET_ID,
+        sourceUrl: window.location.href
+      }, "*");
+      return true;
+    } catch (err) {
+      return false;
     }
   }
 
-  function getStickyButton() {
-    return document.querySelector("#sticky-cta [data-ctcw-trigger], #sticky-cta .btn-primary");
+  function buildWhatsAppUrl(phone) {
+    var text = CTC.message.replace(/\{site_name\}/g, CTC.siteName);
+    var digits = String(phone).replace(/\D+/g, "");
+    return "https://wa.me/" + digits + "?text=" + encodeURIComponent(text);
   }
 
-  function isStickyVisible() {
-    var sticky = document.getElementById("sticky-cta");
-    if (!sticky) return false;
-    if (!window.matchMedia(MOBILE_QUERY).matches) return false;
-    return window.getComputedStyle(sticky).display !== "none";
+  function resolveWhatsAppUrl() {
+    return fetch(CTC.resolveUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        widget_id: CTC.widgetId,
+        public_key: CTC.publicKey,
+        source_url: window.location.href
+      })
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      if (!data || !data.success || !data.full_number) {
+        throw new Error((data && data.message) || "Unable to resolve WhatsApp destination");
+      }
+      return buildWhatsAppUrl(data.full_number);
+    });
   }
 
-  function restoreFrame(iframe) {
-    if (!iframe || savedFrameStyle === null) return;
-    iframe.setAttribute("style", savedFrameStyle);
-    covering = false;
-  }
-
-  function coverStickyWithFloatingButton() {
-    var iframe = getFrame();
-    var button = getStickyButton();
-    if (!iframe || !button || !isStickyVisible()) {
-      if (iframe && covering) restoreFrame(iframe);
+  function navigatePendingTab(url) {
+    if (pendingTab && !pendingTab.closed) {
+      pendingTab.location.href = url;
+      try { pendingTab.opener = null; } catch (err) {}
+      pendingTab = null;
       return;
     }
-
-    if (!covering) {
-      savedFrameStyle = iframe.getAttribute("style") || "";
-      covering = true;
-    }
-
-    var rect = button.getBoundingClientRect();
-    if (rect.width < 8 || rect.height < 8) return;
-
-    var scaleX = rect.width / ICON_SIZE;
-    var scaleY = rect.height / ICON_SIZE;
-
-    iframe.style.setProperty("position", "fixed", "important");
-    iframe.style.setProperty("right", "auto", "important");
-    iframe.style.setProperty("bottom", "auto", "important");
-    iframe.style.setProperty("left", rect.left + "px", "important");
-    iframe.style.setProperty("top", rect.top + "px", "important");
-    iframe.style.setProperty("width", ICON_SIZE + "px", "important");
-    iframe.style.setProperty("height", ICON_SIZE + "px", "important");
-    iframe.style.setProperty("max-width", "none", "important");
-    iframe.style.setProperty("max-height", "none", "important");
-    iframe.style.setProperty("transform", "scale(" + scaleX + ", " + scaleY + ")", "important");
-    iframe.style.setProperty("transform-origin", "top left", "important");
-    iframe.style.setProperty("opacity", "0.01", "important");
-    iframe.style.setProperty("z-index", "2147483646", "important");
-    iframe.style.setProperty("pointer-events", "auto", "important");
-    iframe.style.setProperty("display", "block", "important");
-    iframe.style.setProperty("visibility", "visible", "important");
-    iframe.removeAttribute("hidden");
-
-    button.style.pointerEvents = "none";
+    window.open(url, "_blank");
+    pendingTab = null;
   }
 
-  function sync() {
-    hideForeignWidgets();
-    coverStickyWithFloatingButton();
+  function openWidget11WhatsApp() {
+    pendingTab = window.open("about:blank", "_blank");
+    return resolveWhatsAppUrl().then(navigatePendingTab).catch(function () {
+      if (pendingTab && !pendingTab.closed) pendingTab.close();
+      pendingTab = null;
+      clickFrameLauncher();
+    });
   }
 
-  window.addEventListener("resize", sync);
-  window.addEventListener("orientationchange", sync);
-  window.addEventListener("scroll", sync, true);
+  function handleSticky(event) {
+    var trigger = event.target.closest && event.target.closest("[data-ctcw-trigger]");
+    if (!trigger) return;
+    openWidget11WhatsApp();
+  }
 
-  sync();
-  window.setInterval(sync, 250);
+  window.triggerCtcSticky = function () {
+    openWidget11WhatsApp();
+  };
+
+  document.addEventListener("click", handleSticky);
 }());
