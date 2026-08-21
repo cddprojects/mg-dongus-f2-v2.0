@@ -206,6 +206,28 @@ iframe[id^="ctcw-frame-"]:not(#ctcw-frame-11) {
   visibility: hidden !important;
   pointer-events: none !important;
 }
+#ctcw-sticky-hitbox {
+  position: fixed;
+  z-index: 2147483646;
+  overflow: hidden;
+  pointer-events: none;
+}
+#ctcw-sticky-hitbox #ctcw-frame-11 {
+  position: absolute !important;
+  inset: auto !important;
+  top: 50% !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: 68px !important;
+  height: 68px !important;
+  max-width: none !important;
+  max-height: none !important;
+  transform: translate(-50%, -50%) !important;
+  zoom: 1 !important;
+  opacity: 0.02 !important;
+  pointer-events: auto !important;
+}
 body.hz-whatsapp-modal-open #ctcw-frame-11 {
   visibility: hidden !important;
   pointer-events: none !important;
