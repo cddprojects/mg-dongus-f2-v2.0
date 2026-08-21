@@ -3,8 +3,17 @@
 
   var FRAME_ID = "ctcw-frame-11";
   var WIDGET_ID = "11";
-  var TRIGGER_SELECTOR = ".js-ctcw-waf2, [data-hz-whatsapp-cta], [data-hz-whatsapp-open]";
+  var TRIGGER_SELECTOR = ".js-ctcw-waf2";
+  var CTC = {
+    widgetId: 11,
+    publicKey: "793738b628145012fdfbfc6f2d3a194e3c9fef124c336566",
+    resolveUrl: "https://ctc.chatfromforms.com/resolve-widget-destination.php",
+    siteName: "PreMarketGuide",
+    message: "Hi, I'd like to join the free {site_name} daily market analysis group."
+  };
   var pendingTab = null;
+  var opening = false;
+  var filled = false;
 
   function frameBelongsToThisWidget(iframe) {
     if (!iframe) return false;
@@ -29,17 +38,48 @@
     return null;
   }
 
-  function closeFormPopup() {
-    var backdrop = document.querySelector("[data-hz-whatsapp-backdrop]");
-    if (backdrop) backdrop.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("hz-whatsapp-modal-open");
+  function buildWhatsAppUrl(phone) {
+    var text = CTC.message.replace(/\{site_name\}/g, CTC.siteName);
+    var digits = String(phone).replace(/\D+/g, "");
+    return "https://wa.me/" + digits + "?text=" + encodeURIComponent(text);
   }
 
-  function clickFloatingWaf2() {
-    var iframe = getFrame();
-    pendingTab = window.open("about:blank", "_blank");
-    if (!iframe || !iframe.contentWindow) return;
+  function resolveWhatsAppUrl() {
+    return fetch(CTC.resolveUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        widget_id: CTC.widgetId,
+        public_key: CTC.publicKey,
+        source_url: window.location.href
+      })
+    }).then(function (response) {
+      return response.json();
+    }).then(function (data) {
+      if (!data || !data.success || !data.full_number) {
+        throw new Error((data && data.message) || "Unable to resolve WhatsApp destination");
+      }
+      return buildWhatsAppUrl(data.full_number);
+    });
+  }
 
+  function navigatePendingTab(url) {
+    if (!url || filled) return;
+    filled = true;
+    opening = false;
+    if (pendingTab && !pendingTab.closed) {
+      pendingTab.location.href = url;
+      try { pendingTab.opener = null; } catch (err) {}
+      pendingTab = null;
+      return;
+    }
+    window.open(url, "_blank");
+    pendingTab = null;
+  }
+
+  function askIframeToOpen() {
+    var iframe = getFrame();
+    if (!iframe || !iframe.contentWindow) return;
     iframe.contentWindow.postMessage({
       type: "ctcw:open",
       id: WIDGET_ID,
@@ -47,30 +87,32 @@
     }, "*");
   }
 
+  function openFromSticky() {
+    pendingTab = window.open("about:blank", "_blank");
+    opening = true;
+    filled = false;
+    askIframeToOpen();
+    resolveWhatsAppUrl().then(navigatePendingTab).catch(function () {
+      if (filled) return;
+      if (pendingTab && !pendingTab.closed) pendingTab.close();
+      pendingTab = null;
+      opening = false;
+    });
+  }
+
   function handleClick(event) {
     var trigger = event.target.closest && event.target.closest(TRIGGER_SELECTOR);
     if (!trigger) return;
     event.preventDefault();
-    closeFormPopup();
-    clickFloatingWaf2();
-    window.setTimeout(closeFormPopup, 0);
-    window.setTimeout(closeFormPopup, 50);
+    event.stopPropagation();
+    openFromSticky();
   }
 
   window.addEventListener("message", function (event) {
     if (!event.data || event.data.type !== "ctcw:destination") return;
     if (String(event.data.id) !== WIDGET_ID) return;
-    if (!event.data.url) return;
-
-    if (pendingTab && !pendingTab.closed) {
-      pendingTab.location.href = event.data.url;
-      try { pendingTab.opener = null; } catch (err) {}
-      pendingTab = null;
-      return;
-    }
-
-    window.open(event.data.url, "_blank");
-    pendingTab = null;
+    if (!opening) return;
+    navigatePendingTab(event.data.url);
   });
 
   document.addEventListener("click", handleClick, true);
