@@ -40,8 +40,11 @@
   }
 
   function handleClick(event) {
-    var trigger = event.target.closest && event.target.closest("." + TRIGGER_CLASS);
+    var trigger = event.target.closest && event.target.closest(
+      "." + TRIGGER_CLASS + ", [data-hz-whatsapp-cta], [data-hz-whatsapp-open]"
+    );
     if (!trigger) return;
+    event.preventDefault();
     clickFloatingWaf2();
   }
 

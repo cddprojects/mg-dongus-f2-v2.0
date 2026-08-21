@@ -85,11 +85,8 @@
     }
   }
 
-  trigger.addEventListener("click", function () { openModal(trigger); });
-  document.addEventListener("click", function (event) {
-    var opener = event.target.closest && event.target.closest("[data-hz-whatsapp-cta]");
-    if (opener) openModal(opener);
-  });
+  trigger.classList.add("js-ctcw-waf2");
+  trigger.removeAttribute("aria-haspopup");
   closeButton.addEventListener("click", closeModal);
   dialog.addEventListener("click", function (event) { event.stopPropagation(); });
   backdrop.addEventListener("click", closeModal);
@@ -105,7 +102,7 @@
   });
 
   document.querySelectorAll("[data-hz-whatsapp-cta]").forEach(function (button) {
-    button.setAttribute("aria-haspopup", "dialog");
+    button.classList.add("js-ctcw-waf2");
+    button.removeAttribute("aria-haspopup");
   });
-  ensureFormScript();
 }());
